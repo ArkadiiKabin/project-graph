@@ -62,6 +62,7 @@ void Graph::PrintGraph() const{
 void Graph::BFS(int startRoomId) const{
     queue<int> roomsQueue;
     unordered_set<int> visited;
+    vector<int> parent(allRooms.size(), -1);
     visited.insert(startRoomId);
     roomsQueue.push(startRoomId);
     while(!roomsQueue.empty()){
@@ -71,7 +72,8 @@ void Graph::BFS(int startRoomId) const{
         const Room& currentRoom = getRoom(currentRoomId);
         for(int neighborId : currentRoom.connectedRooms){
             if (visited.insert(neighborId).second) {
-            roomsQueue.push(neighborId);
+                parent[neighborId] = currentRoomId;
+                roomsQueue.push(neighborId);
             }
         }
     }
