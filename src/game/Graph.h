@@ -9,7 +9,9 @@ struct Room {
 
 class Graph{
     private:
+    vector<bool> visited;
     vector<Room> allRooms;
+    void DFSRecursive(int roomId);
     public:
     void addRoom(int id);
     void GenerationRooms();
@@ -18,5 +20,6 @@ class Graph{
     int getRoomCount() const;
     const Room& getRoom(int id) const;
     void PrintGraph() const;
-    void BFS(int startRoomId) const;
+    void BFS(int startRoomId, int endRoomId) const;
+    void DFS(int roomId);
 };

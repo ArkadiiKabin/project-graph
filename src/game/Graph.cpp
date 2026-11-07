@@ -1,6 +1,7 @@
 #include "Graph.h"
 #include <random>
 #include <iostream>
+#include <algorithm>
 #include <queue>
 #include <unordered_set>
 
@@ -59,22 +60,68 @@ void Graph::PrintGraph() const{
     }
 }
 
-void Graph::BFS(int startRoomId) const{
+void Graph::BFS(int startRoomId, int endRoomId) const {
     queue<int> roomsQueue;
     unordered_set<int> visited;
     vector<int> parent(allRooms.size(), -1);
+
     visited.insert(startRoomId);
     roomsQueue.push(startRoomId);
+
     while(!roomsQueue.empty()){
         int currentRoomId = roomsQueue.front();
         roomsQueue.pop();
+
         cout << "Visited room: " << currentRoomId << endl;
+
+        if(currentRoomId == endRoomId){
+            break;
+        }
+
         const Room& currentRoom = getRoom(currentRoomId);
+
         for(int neighborId : currentRoom.connectedRooms){
             if (visited.insert(neighborId).second) {
                 parent[neighborId] = currentRoomId;
                 roomsQueue.push(neighborId);
             }
+        }
+    }
+
+    if(visited.find(endRoomId) == visited.end()){
+        cout << "Path not found!" << endl;
+        return;
+    }
+
+    vector<int> path;
+    int current = endRoomId;
+
+    while(current != -1){
+        path.push_back(current);
+        current = parent[current];
+    }
+
+    reverse(path.begin(), path.end());
+
+    cout << "Shortest path: ";
+    for(int roomId : path){
+        cout << roomId << " ";
+    }
+    cout << endl;
+}
+
+void Graph::DFS(int roomId){
+    visited.assign(allRooms.size(), false);
+    DFSRecursive(roomId);
+}
+
+void Graph::DFSRecursive(int roomId){
+    visited[roomId] = true;
+    cout << "Visited room: " << roomId << endl;
+    const Room& currentRoom = getRoom(roomId);
+    for (int neighborId : currentRoom.connectedRooms){
+        if (!visited[neighborId]){
+            DFSRecursive(neighborId);
         }
     }
 }

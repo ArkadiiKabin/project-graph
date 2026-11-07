@@ -11,7 +11,7 @@ int main()
     graph.GenerationRooms();
     graph.generateConnections();
     graph.PrintGraph();
-    graph.BFS(0);
+    graph.BFS(0, 8);
     Menu menu;
     Game game;
     while (window.isOpen())
