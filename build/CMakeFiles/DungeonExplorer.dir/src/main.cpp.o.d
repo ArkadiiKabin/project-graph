@@ -1,6 +1,7 @@
 CMakeFiles/DungeonExplorer.dir/src/main.cpp.o: \
- /home/ianwe/DungeonExplorer/src/main.cpp /usr/include/stdc-predef.h \
- /usr/include/SFML/Graphics.hpp /usr/include/SFML/Graphics/BlendMode.hpp \
+ /home/ianwe/Desktop/project-graph/src/main.cpp \
+ /usr/include/stdc-predef.h /usr/include/SFML/Graphics.hpp \
+ /usr/include/SFML/Graphics/BlendMode.hpp \
  /usr/include/SFML/Graphics/Export.hpp /usr/include/SFML/Config.hpp \
  /usr/include/SFML/Graphics/CircleShape.hpp \
  /usr/include/SFML/Graphics/Shape.hpp \
@@ -263,6 +264,6 @@ CMakeFiles/DungeonExplorer.dir/src/main.cpp.o: \
  /usr/include/SFML/System/InputStream.hpp \
  /usr/include/SFML/System/MemoryInputStream.hpp \
  /usr/include/SFML/System/Sleep.hpp \
- /home/ianwe/DungeonExplorer/src/ui/Menu.h \
- /home/ianwe/DungeonExplorer/src/game/Game.h \
- /home/ianwe/DungeonExplorer/src/game/Graph.h
+ /home/ianwe/Desktop/project-graph/src/ui/Menu.h \
+ /home/ianwe/Desktop/project-graph/src/game/Game.h \
+ /home/ianwe/Desktop/project-graph/src/game/Graph.h

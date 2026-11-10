@@ -1,7 +1,8 @@
 CMakeFiles/DungeonExplorer.dir/src/ui/Menu.cpp.o: \
- /home/ianwe/DungeonExplorer/src/ui/Menu.cpp /usr/include/stdc-predef.h \
- /home/ianwe/DungeonExplorer/src/ui/Menu.h /usr/include/SFML/Graphics.hpp \
- /usr/include/SFML/Graphics/BlendMode.hpp \
+ /home/ianwe/Desktop/project-graph/src/ui/Menu.cpp \
+ /usr/include/stdc-predef.h \
+ /home/ianwe/Desktop/project-graph/src/ui/Menu.h \
+ /usr/include/SFML/Graphics.hpp /usr/include/SFML/Graphics/BlendMode.hpp \
  /usr/include/SFML/Graphics/Export.hpp /usr/include/SFML/Config.hpp \
  /usr/include/SFML/Graphics/CircleShape.hpp \
  /usr/include/SFML/Graphics/Shape.hpp \

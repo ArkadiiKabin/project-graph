@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ianwe/DungeonExplorer
+CMAKE_SOURCE_DIR = /home/ianwe/Desktop/project-graph
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ianwe/DungeonExplorer/build
+CMAKE_BINARY_DIR = /home/ianwe/Desktop/project-graph/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -85,14 +85,14 @@ clean: CMakeFiles/DungeonExplorer.dir/clean
 CMakeFiles/DungeonExplorer.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DungeonExplorer.dir/build.make CMakeFiles/DungeonExplorer.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DungeonExplorer.dir/build.make CMakeFiles/DungeonExplorer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/ianwe/DungeonExplorer/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target DungeonExplorer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/ianwe/Desktop/project-graph/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target DungeonExplorer"
 .PHONY : CMakeFiles/DungeonExplorer.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/DungeonExplorer.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ianwe/DungeonExplorer/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ianwe/Desktop/project-graph/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/DungeonExplorer.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ianwe/DungeonExplorer/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ianwe/Desktop/project-graph/build/CMakeFiles 0
 .PHONY : CMakeFiles/DungeonExplorer.dir/rule
 
 # Convenience name for target.
@@ -102,7 +102,7 @@ DungeonExplorer: CMakeFiles/DungeonExplorer.dir/rule
 # codegen rule for target.
 CMakeFiles/DungeonExplorer.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DungeonExplorer.dir/build.make CMakeFiles/DungeonExplorer.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/ianwe/DungeonExplorer/build/CMakeFiles --progress-num=1,2,3,4,5 "Finished codegen for target DungeonExplorer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/ianwe/Desktop/project-graph/build/CMakeFiles --progress-num=1,2,3,4,5 "Finished codegen for target DungeonExplorer"
 .PHONY : CMakeFiles/DungeonExplorer.dir/codegen
 
 # clean rule for target.

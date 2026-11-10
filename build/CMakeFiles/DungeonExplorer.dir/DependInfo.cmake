@@ -8,10 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/ianwe/DungeonExplorer/src/game/Game.cpp" "CMakeFiles/DungeonExplorer.dir/src/game/Game.cpp.o" "gcc" "CMakeFiles/DungeonExplorer.dir/src/game/Game.cpp.o.d"
-  "/home/ianwe/DungeonExplorer/src/game/Graph.cpp" "CMakeFiles/DungeonExplorer.dir/src/game/Graph.cpp.o" "gcc" "CMakeFiles/DungeonExplorer.dir/src/game/Graph.cpp.o.d"
-  "/home/ianwe/DungeonExplorer/src/main.cpp" "CMakeFiles/DungeonExplorer.dir/src/main.cpp.o" "gcc" "CMakeFiles/DungeonExplorer.dir/src/main.cpp.o.d"
-  "/home/ianwe/DungeonExplorer/src/ui/Menu.cpp" "CMakeFiles/DungeonExplorer.dir/src/ui/Menu.cpp.o" "gcc" "CMakeFiles/DungeonExplorer.dir/src/ui/Menu.cpp.o.d"
+  "/home/ianwe/Desktop/project-graph/src/game/Game.cpp" "CMakeFiles/DungeonExplorer.dir/src/game/Game.cpp.o" "gcc" "CMakeFiles/DungeonExplorer.dir/src/game/Game.cpp.o.d"
+  "/home/ianwe/Desktop/project-graph/src/game/Graph.cpp" "CMakeFiles/DungeonExplorer.dir/src/game/Graph.cpp.o" "gcc" "CMakeFiles/DungeonExplorer.dir/src/game/Graph.cpp.o.d"
+  "/home/ianwe/Desktop/project-graph/src/main.cpp" "CMakeFiles/DungeonExplorer.dir/src/main.cpp.o" "gcc" "CMakeFiles/DungeonExplorer.dir/src/main.cpp.o.d"
+  "/home/ianwe/Desktop/project-graph/src/ui/Menu.cpp" "CMakeFiles/DungeonExplorer.dir/src/ui/Menu.cpp.o" "gcc" "CMakeFiles/DungeonExplorer.dir/src/ui/Menu.cpp.o.d"
   "" "DungeonExplorer" "gcc" "CMakeFiles/DungeonExplorer.dir/link.d"
   )
 

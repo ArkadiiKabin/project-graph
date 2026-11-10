@@ -1,7 +1,7 @@
 {
 	"InstallScripts" : 
 	[
-		"/home/ianwe/DungeonExplorer/build/cmake_install.cmake"
+		"/home/ianwe/Desktop/project-graph/build/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

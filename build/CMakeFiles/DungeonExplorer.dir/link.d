@@ -38,7 +38,6 @@ DungeonExplorer: \
   /usr/lib/i386-linux-gnu/libfreetype.so.6 \
   /usr/lib/x86_64-linux-gnu/libfreetype.so.6 \
   /usr/lib/x86_64-linux-gnu/libstb.so.0 \
-  /usr/lib/x86_64-linux-gnu/libm.so.6 \
   /usr/lib/i386-linux-gnu/libX11.so.6 \
   /usr/lib/x86_64-linux-gnu/libX11.so.6 \
   /usr/lib/i386-linux-gnu/libXrandr.so.2 \
@@ -150,8 +149,6 @@ CMakeFiles/DungeonExplorer.dir/src/game/Graph.cpp.o:
 /usr/lib/x86_64-linux-gnu/libfreetype.so.6:
 
 /usr/lib/x86_64-linux-gnu/libstb.so.0:
-
-/usr/lib/x86_64-linux-gnu/libm.so.6:
 
 /usr/lib/i386-linux-gnu/libX11.so.6:
 

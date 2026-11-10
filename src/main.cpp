@@ -12,8 +12,11 @@ int main()
     graph.generateConnections();
     graph.PrintGraph();
     graph.BFS(0, 8);
+    graph.DFS(0);
+    graph.Dijkstra(0, 8);
     Menu menu;
     Game game;
+    game.setGraph(graph);
     while (window.isOpen())
     {
         while (const std::optional event = window.pollEvent())
