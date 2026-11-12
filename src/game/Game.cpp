@@ -92,8 +92,8 @@ Game::Game()
     infoContent.setString("Select an algorithm to see its results");
 
     // Кнопка переключения
-    infoToggleButton.setSize({165.f, 40.f});
-    infoToggleButton.setPosition({895.f, 855.f});
+    infoToggleButton.setSize({140.f, 28.f});
+    infoToggleButton.setPosition({900.f, 835.f});
     infoToggleButton.setFillColor(sf::Color(65, 85, 105));
 
     // Панель информации о подземелье
@@ -296,19 +296,19 @@ void Game::draw(sf::RenderWindow& window)
         infoTitle.setString("ALGORITHM RESULTS");
         window.draw(infoTitle);
 
-        sf::Text bfsInfo(font, "BFS: " + bfsResult, 13);
+        sf::Text bfsInfo(font, "BFS: " + bfsResult, 11);
         bfsInfo.setFillColor(sf::Color::Yellow);
         bfsInfo.setPosition({35.f, 865.f});
         window.draw(bfsInfo);
 
-        sf::Text dfsInfo(font, "DFS: " + dfsResult, 13);
+        sf::Text dfsInfo(font, "DFS: " + dfsResult, 11);
         dfsInfo.setFillColor(sf::Color::Red);
-        dfsInfo.setPosition({35.f, 885.f});
+        dfsInfo.setPosition({35.f, 882.f});
         window.draw(dfsInfo);
 
-        sf::Text dijkstraInfo(font, "DIJKSTRA: " + dijkstraResult, 13);
+        sf::Text dijkstraInfo(font, "DIJKSTRA: " + dijkstraResult, 11);
         dijkstraInfo.setFillColor(sf::Color(255, 140, 0));
-        dijkstraInfo.setPosition({35.f, 905.f});
+        dijkstraInfo.setPosition({35.f, 899.f});
         window.draw(dijkstraInfo);
     }
 
@@ -318,12 +318,12 @@ void Game::draw(sf::RenderWindow& window)
     sf::Text toggleText(
         font,
         showDungeonInfo ? "ALGORITHMS" : "DUNGEON INFO",
-        12
+        11
     );
 
     toggleText.setFillColor(sf::Color::White);
     toggleText.setOrigin(toggleText.getLocalBounds().size / 2.f);
-    toggleText.setPosition({977.5f, 875.f});
+    toggleText.setPosition({970.f, 849.f});
 
     window.draw(toggleText);
 
