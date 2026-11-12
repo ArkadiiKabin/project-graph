@@ -18,7 +18,9 @@ class Graph{
     private:
     vector<bool> visited;
     vector<Room> allRooms;
-    void DFSRecursive(int roomId);
+    void arrangeRooms();
+    int targetRoomId = -1;
+    bool DFSRecursive(int roomId, vector<int>& path);
     public:
     void addRoom(int id);
     void GenerationRooms();
@@ -26,8 +28,9 @@ class Graph{
     void generateConnections();
     int getRoomCount() const;
     const Room& getRoom(int id) const;
-    void PrintGraph() const;
-    void BFS(int startRoomId, int endRoomId) const;
-    void DFS(int roomId);
-    void Dijkstra(int startRoomId, int endRoomId);
+    string PrintGraph() const;
+    vector<int> BFS(int startRoomId, int endRoomId) const;
+    vector<int> DFS(int startRoomId, int endRoomId);
+    vector<int> Dijkstra(int startRoomId, int endRoomId);
+    void clear();
 };

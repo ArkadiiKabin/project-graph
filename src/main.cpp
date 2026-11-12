@@ -5,15 +5,12 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "Dungeon Explorer");
+    sf::RenderWindow window(sf::VideoMode({1100, 950}), "Dungeon Explorer");
     window.setFramerateLimit(60);
     Graph graph;
     graph.GenerationRooms();
     graph.generateConnections();
     graph.PrintGraph();
-    graph.BFS(0, 8);
-    graph.DFS(0);
-    graph.Dijkstra(0, 8);
     Menu menu;
     Game game;
     game.setGraph(graph);

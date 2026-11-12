@@ -15,30 +15,37 @@ void Graph::addRoom(int id){
 void Graph::GenerationRooms(){
     random_device rd;
     mt19937 gen(rd());
+
     uniform_int_distribution<> dist(10, 20);
-    uniform_int_distribution<> xDist(50, 540);
-    uniform_int_distribution<> yDist(50, 490);
     int roomCount = dist(gen);
+
+    // Определяем количество столбцов и строк
+    int columns = static_cast<int>(ceil(sqrt(roomCount)));
+    int rows = (roomCount + columns - 1) / columns;
+
+    // Размер одной ячейки
+    float cellWidth = 700.f / columns;
+    float cellHeight = 700.f / rows;
+
     for(int i = 0; i < roomCount; ++i){
         addRoom(i);
-        bool validPosition = false;
-        while(!validPosition){
-            float x = static_cast<float>(xDist(gen));
-            float y = static_cast<float>(yDist(gen));
-            validPosition = true;
-            for(int j = 0; j < i; ++j){
-                float dx = x - allRooms[j].position.x;
-                float dy = y - allRooms[j].position.y;
-                float distance = std::sqrt(dx * dx + dy * dy);
-                if(distance < 40.f){
-                    validPosition = false;
-                    break;
-                }
-            }
-            if(validPosition){
-                allRooms[i].position = {x, y};
-            }
+
+        int row = i / columns;
+        int column = i % columns;
+
+        // Чередуем направление заполнения строк
+        if(row % 2 == 1){
+            column = columns - 1 - column;
         }
+
+        // Случайное положение внутри ячейки
+        uniform_real_distribution<float> xDist(20.f, cellWidth - 20.f);
+        uniform_real_distribution<float> yDist(20.f, cellHeight - 20.f);
+
+        float x = 50.f + column * cellWidth + xDist(gen);
+        float y = 50.f + row * cellHeight + yDist(gen);
+
+        allRooms[i].position = {x, y};
     }
 }
 
@@ -58,11 +65,67 @@ void Graph::generateConnections(){
     }
     for(int i = 0; i < allRooms.size(); ++i){
         for(int j = i + 1; j < allRooms.size(); ++j){
-            if(allRooms[i].connectedRooms.size() >= 4) break;
-            if(allRooms[j].connectedRooms.size() >= 4) continue;
+            if(allRooms[i].connectedRooms.size() >= 3) break;
+            if(allRooms[j].connectedRooms.size() >= 3) continue;
             if(j == i + 1) continue;
             int connectionChance = chanceDist(gen);
             if(connectionChance == 1) connectRooms(i, j, weightDist(gen));
+        }
+    }
+    arrangeRooms();
+}
+
+void Graph::arrangeRooms() {
+    int roomCount = allRooms.size();
+
+    if (roomCount == 0) return;
+
+    // Создаём слои комнат
+    vector<vector<int>> layers;
+    vector<int> distances(roomCount, -1);
+    queue<int> q;
+
+    // Начинаем обход с комнаты 0
+    distances[0] = 0;
+    q.push(0);
+
+    // Распределяем комнаты по слоям с помощью BFS
+    while (!q.empty()) {
+        int current = q.front();
+        q.pop();
+
+        int layer = distances[current];
+
+        if (layers.size() <= layer) {
+            layers.resize(layer + 1);
+        }
+
+        layers[layer].push_back(current);
+
+        for (const Connection& connection : allRooms[current].connectedRooms) {
+            int neighbor = connection.roomId;
+
+            if (distances[neighbor] == -1) {
+                distances[neighbor] = layer + 1;
+                q.push(neighbor);
+            }
+        }
+    }
+
+    // Находим количество слоёв
+    int layerCount = layers.size();
+
+    // Расставляем комнаты
+    for (int i = 0; i < layerCount; i++) {
+        int roomsInLayer = layers[i].size();
+
+        float x = 70.f + i * (660.f / max(1, layerCount - 1));
+
+        for (int j = 0; j < roomsInLayer; j++) {
+            float y = 70.f + (j + 1) * (660.f / (roomsInLayer + 1));
+            int roomId = layers[i][j];
+
+            allRooms[roomId].position = {x, y};
         }
     }
 }
@@ -75,20 +138,27 @@ const Room& Graph::getRoom(int id) const{
     return allRooms[id];
 }
 
-void Graph::PrintGraph() const{
-    for(int i = 0; i < allRooms.size(); i++){
-        cout << "Room " << allRooms[i].id << " is connected to: ";
+std::string Graph::PrintGraph() const {
+    std::string result;
+
+    for (int i = 0; i < allRooms.size(); i++) {
+        result += "Room " + std::to_string(allRooms[i].id) + " is connected to: ";
+
         for (const Connection& connection : allRooms[i].connectedRooms) {
-            cout << connection.roomId << "(weight: " << connection.weight << ") ";
+            result += std::to_string(connection.roomId);
+            result += "(weight: " + std::to_string(connection.weight) + ") ";
         }
-        cout << endl;
+
+        result += "\n";
     }
+
+    return result;
 }
 
-void Graph::BFS(int startRoomId, int endRoomId) const {
+vector<int> Graph::BFS(int startRoomId, int endRoomId) const {
     if(startRoomId < 0 || startRoomId >= allRooms.size() || endRoomId < 0 || endRoomId >= allRooms.size()){
         cout << "Invalid room ID!" << endl;
-        return;
+        return {};
     }
     queue<int> roomsQueue;
     unordered_set<int> visited;
@@ -116,7 +186,7 @@ void Graph::BFS(int startRoomId, int endRoomId) const {
 
     if(visited.find(endRoomId) == visited.end()){
         cout << "Path not found!" << endl;
-        return;
+        return {};
     }
     vector<int> path;
     int current = endRoomId;
@@ -130,33 +200,60 @@ void Graph::BFS(int startRoomId, int endRoomId) const {
         cout << roomId << " ";
     }
     cout << endl;
+    return path;
 }
 
-void Graph::DFS(int roomId){
-    if(roomId < 0 || roomId >= allRooms.size()){
+vector<int> Graph::DFS(int startRoomId, int endRoomId){
+    if(startRoomId < 0 || startRoomId >= allRooms.size() ||
+       endRoomId < 0 || endRoomId >= allRooms.size()){
         cout << "Invalid room ID!" << endl;
-        return;
+        return {};
     }
+
     visited.assign(allRooms.size(), false);
-    DFSRecursive(roomId);
+    targetRoomId = endRoomId;
+
+    vector<int> path;
+    DFSRecursive(startRoomId, path);
+
+    if(path.empty() || path.back() != endRoomId){
+        cout << "Path not found!" << endl;
+        return {};
+    }
+
+    return path;
 }
 
-void Graph::DFSRecursive(int roomId){
+bool Graph::DFSRecursive(int roomId, vector<int>& path){
     visited[roomId] = true;
+    path.push_back(roomId);
+
     cout << "Visited room: " << roomId << endl;
+
+    if(roomId == targetRoomId){
+        return true;
+    }
+
     const Room& currentRoom = getRoom(roomId);
-    for (const Connection& connection : currentRoom.connectedRooms){
+
+    for(const Connection& connection : currentRoom.connectedRooms){
         int neighborId = connection.roomId;
-        if (!visited[neighborId]){
-            DFSRecursive(neighborId);
+
+        if(!visited[neighborId]){
+            if(DFSRecursive(neighborId, path)){
+                return true;
+            }
         }
     }
+
+    path.pop_back();
+    return false;
 }
 
-void Graph::Dijkstra(int startRoomId, int endRoomId){
+std::vector<int> Graph::Dijkstra(int startRoomId, int endRoomId){
     if(startRoomId < 0 || startRoomId >= allRooms.size() || endRoomId < 0 || endRoomId >= allRooms.size()){
         cout << "Invalid room ID!" << endl;
-        return;
+        return {};
     }
     vector<int> distance (allRooms.size(), INT_MAX);
     distance[startRoomId] = 0;
@@ -181,7 +278,7 @@ void Graph::Dijkstra(int startRoomId, int endRoomId){
             }
         }
     }
-    if(distance[endRoomId] == INT_MAX) {cout << "not found"; return;}
+    if(distance[endRoomId] == INT_MAX) {cout << "not found"; return {};}
     vector<int> path;
     int current = endRoomId;
     while(current != -1){
@@ -194,4 +291,11 @@ void Graph::Dijkstra(int startRoomId, int endRoomId){
         cout << roomId << " ";
     }
     cout << "Total cost: " << distance[endRoomId] << "\n\n";
+    return path;
+}
+
+void Graph::clear(){
+    allRooms.clear();
+    visited.clear();
+    targetRoomId = -1;
 }
