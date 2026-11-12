@@ -1,7 +1,42 @@
-#include "Game.h"
-#include <string>
 #include <cmath>
 #include <sstream>
+#include <string>
+#include <iostream>
+#include "Game.hpp"
+
+void fitDungeonToView(const Graph& graph, sf::View& camera) {
+    if (graph.getRoomCount() == 0) return;
+
+    const float roomSize = 128.f;
+    const float padding = 40.f;
+
+    const Room& firstRoom = graph.getRoom(0);
+
+    float minX = firstRoom.position.x;
+    float maxX = firstRoom.position.x;
+    float minY = firstRoom.position.y;
+    float maxY = firstRoom.position.y;
+
+    for (int i = 1; i < graph.getRoomCount(); ++i) {
+        const Room& room = graph.getRoom(i);
+
+        minX = std::min(minX, room.position.x);
+        maxX = std::max(maxX, room.position.x);
+        minY = std::min(minY, room.position.y);
+        maxY = std::max(maxY, room.position.y);
+    }
+
+    float width = maxX - minX + roomSize + padding * 2.f;
+    float height = maxY - minY + roomSize + padding * 2.f;
+
+    float viewSize = std::max(width, height);
+
+    camera.setSize({viewSize, viewSize});
+    camera.setCenter({
+        (minX + maxX) / 2.f,
+        (minY + maxY) / 2.f
+    });
+}
 
 Game::Game()
     : infoTitle(font),
@@ -10,10 +45,114 @@ Game::Game()
       endLabel(font),
       startValue(font),
       endValue(font),
-      dungeonInfoText(font)
-{
+      dungeonInfoText(font) {
+
     if (!font.openFromFile("assets/fonts/HS_LunaObscura.ttf")) {
         return;
+    }
+    // Загружаем текстуры дорог
+    roadTexturesLoaded =
+        blueRoadTexture.loadFromFile("assets/textures/roads/blue_road.png") &&
+        greenRoadTexture.loadFromFile("assets/textures/roads/green_road.png") &&
+        brownRoadTexture.loadFromFile("assets/textures/roads/brown_road.png") &&
+        purpleRoadTexture.loadFromFile("assets/textures/roads/purple_road.png") &&
+        grayRoadTexture.loadFromFile("assets/textures/roads/gray_road.png");
+
+    // Отключаем сглаживание
+    blueRoadTexture.setSmooth(false);
+    greenRoadTexture.setSmooth(false);
+    brownRoadTexture.setSmooth(false);
+    purpleRoadTexture.setSmooth(false);
+    grayRoadTexture.setSmooth(false);
+
+    pathTexturesLoaded =
+        yellowPathTexture.loadFromFile("assets/textures/roads/yellow_path.png") &&
+        redPathTexture.loadFromFile("assets/textures/roads/red_path.png") &&
+        orangePathTexture.loadFromFile("assets/textures/roads/orange_path.png");
+
+    yellowPathTexture.setSmooth(false);
+    redPathTexture.setSmooth(false);
+    orangePathTexture.setSmooth(false);
+    // Загружаем первый набор текстур
+    roomTexturesLoaded =
+        roomTexture.loadFromFile("assets/textures/room_1/room.png") &&
+        topTexture.loadFromFile("assets/textures/room_1/top.png") &&
+        leftTexture.loadFromFile("assets/textures/room_1/left.png") &&
+        downTexture.loadFromFile("assets/textures/room_1/down.png") &&
+        rightTexture.loadFromFile("assets/textures/room_1/right.png");
+
+    // Загружаем второй набор текстур
+    roomTextures2Loaded =
+        roomTexture2.loadFromFile("assets/textures/room_2/room.png") &&
+        topTexture2.loadFromFile("assets/textures/room_2/top.png") &&
+        leftTexture2.loadFromFile("assets/textures/room_2/left.png") &&
+        downTexture2.loadFromFile("assets/textures/room_2/down.png") &&
+        rightTexture2.loadFromFile("assets/textures/room_2/right.png");
+
+    // Загружаем третий набор текстур
+    roomTextures3Loaded =
+        roomTexture3.loadFromFile("assets/textures/room_3/room.png") &&
+        topTexture3.loadFromFile("assets/textures/room_3/top.png") &&
+        leftTexture3.loadFromFile("assets/textures/room_3/left.png") &&
+        downTexture3.loadFromFile("assets/textures/room_3/down.png") &&
+        rightTexture3.loadFromFile("assets/textures/room_3/right.png");
+
+    roomTextures4Loaded =
+        roomTexture4.loadFromFile("assets/textures/room_4/room.png") &&
+        topTexture4.loadFromFile("assets/textures/room_4/top.png") &&
+        leftTexture4.loadFromFile("assets/textures/room_4/left.png") &&
+        downTexture4.loadFromFile("assets/textures/room_4/down.png") &&
+        rightTexture4.loadFromFile("assets/textures/room_4/right.png");
+
+    // Загружаем пятый набор текстур
+    roomTextures5Loaded =
+        roomTexture5.loadFromFile("assets/textures/room_5/room.png") &&
+        topTexture5.loadFromFile("assets/textures/room_5/top.png") &&
+        leftTexture5.loadFromFile("assets/textures/room_5/left.png") &&
+        downTexture5.loadFromFile("assets/textures/room_5/down.png") &&
+        rightTexture5.loadFromFile("assets/textures/room_5/right.png");
+
+    // Отключаем сглаживание текстур
+    roomTexture.setSmooth(false);
+    topTexture.setSmooth(false);
+    leftTexture.setSmooth(false);
+    downTexture.setSmooth(false);
+    rightTexture.setSmooth(false);
+
+    roomTexture2.setSmooth(false);
+    topTexture2.setSmooth(false);
+    leftTexture2.setSmooth(false);
+    downTexture2.setSmooth(false);
+    rightTexture2.setSmooth(false);
+
+    roomTexture3.setSmooth(false);
+    topTexture3.setSmooth(false);
+    leftTexture3.setSmooth(false);
+    downTexture3.setSmooth(false);
+    rightTexture3.setSmooth(false);
+
+    roomTexture4.setSmooth(false);
+    topTexture4.setSmooth(false);
+    leftTexture4.setSmooth(false);
+    downTexture4.setSmooth(false);
+    rightTexture4.setSmooth(false);
+
+    roomTexture5.setSmooth(false);
+    topTexture5.setSmooth(false);
+    leftTexture5.setSmooth(false);
+    downTexture5.setSmooth(false);
+    rightTexture5.setSmooth(false);
+
+    if (!roomTexturesLoaded) {
+        cout << "ERROR: Room textures not loaded!" << std::endl;
+    } else {
+        cout << "Room textures loaded successfully!" << std::endl;
+    }
+
+    if (!roomTextures2Loaded) {
+        cout << "ERROR: Second room textures not loaded!" << std::endl;
+    } else {
+        cout << "Second room textures loaded successfully!" << std::endl;
     }
 
     // Левая панель
@@ -55,6 +194,11 @@ Game::Game()
     generateButton.setSize({155.f, 40.f});
     generateButton.setPosition({882.f, 495.f});
     generateButton.setFillColor(sf::Color(65, 100, 80));
+
+    // Кнопка полной информации
+    fullInfoButton.setSize({155.f, 40.f});
+    fullInfoButton.setPosition({882.f, 565.f});
+    fullInfoButton.setFillColor(sf::Color(65, 85, 105));
 
     // Подписи
     startLabel.setString("Start room:");
@@ -110,93 +254,147 @@ Game::Game()
     dungeonCamera.setCenter({420.f, 420.f});
 
     dungeonCamera.setViewport(
-        sf::FloatRect(
-            {0.01818f, 0.02105f},
-            {0.72727f, 0.8421f}
-        )
+        sf::FloatRect({0.01818f, 0.02105f}, {0.72727f, 0.8421f})
     );
 }
 
-
-void Game::draw(sf::RenderWindow& window)
-{
+void Game::draw(sf::RenderWindow& window) {
     window.setView(window.getDefaultView());
     window.draw(dungeonArea);
+
     window.setView(dungeonCamera);
+
     if (graph == nullptr) return;
-    // Рисуем связи между комнатами
+
+    // Рисуем дороги между комнатами
     for (int i = 0; i < graph->getRoomCount(); i++) {
         const Room& room = graph->getRoom(i);
+
         for (const Connection& connection : room.connectedRooms) {
             if (connection.roomId <= room.id) continue;
+
             const Room& neighbor = graph->getRoom(connection.roomId);
+
+            // Выбираем текстуру дороги по цвету комнаты
+            const sf::Texture* roadTexture = nullptr;
+
+            if (room.textureSet == 1) {
+                roadTexture = &purpleRoadTexture;
+            }
+            else if (room.textureSet == 2) {
+                roadTexture = &greenRoadTexture;
+            }
+            else if (room.textureSet == 3) {
+                roadTexture = &blueRoadTexture;
+            }
+            else if (room.textureSet == 4) {
+                roadTexture = &grayRoadTexture;
+            }
+            else {
+                roadTexture = &brownRoadTexture;
+            }
+
             float dx = neighbor.position.x - room.position.x;
             float dy = neighbor.position.y - room.position.y;
+
             float length = std::sqrt(dx * dx + dy * dy);
             float angle = std::atan2(dy, dx) * 180.f / 3.14159265f;
-            sf::RectangleShape line({length, 1.f});
-            line.setOrigin({0.f, 1.f});
-            line.setPosition(room.position);
-            line.setRotation(sf::degrees(angle));
+
+            // Рисуем текстуру дороги
+            if (roadTexturesLoaded) {
+                sf::Sprite roadSprite(*roadTexture);
+
+                roadSprite.setOrigin({64.f, 64.f});
+
+                roadSprite.setPosition({
+                    (room.position.x + neighbor.position.x) / 2.f,
+                    (room.position.y + neighbor.position.y) / 2.f
+                });
+
+                // Дорога изначально направлена вверх
+                roadSprite.setRotation(sf::degrees(angle + 90.f));
+
+                // Масштабируем длину до расстояния между комнатами
+                roadSprite.setScale({1.f, length / 128.f});
+
+                window.draw(roadSprite);
+            }
+
+            // Проверяем принадлежность связи к маршрутам
             bool isBfsEdge = false;
             bool isDfsEdge = false;
             bool isDijkstraEdge = false;
-            // Проверяем путь BFS
+
             for (size_t j = 0; j + 1 < bfsPath.size(); j++) {
-                if ((bfsPath[j] == room.id && bfsPath[j + 1] == neighbor.id) ||
-                    (bfsPath[j] == neighbor.id && bfsPath[j + 1] == room.id)) {
+                if (
+                    (bfsPath[j] == room.id && bfsPath[j + 1] == neighbor.id) ||
+                    (bfsPath[j] == neighbor.id && bfsPath[j + 1] == room.id)
+                ) {
                     isBfsEdge = true;
                     break;
                 }
             }
-            // Проверяем путь DFS
-            for (size_t i = 0; i + 1 < dfsPath.size(); ++i) {
-                if ((dfsPath[i] == room.id && dfsPath[i + 1] == neighbor.id) ||
-                    (dfsPath[i] == neighbor.id && dfsPath[i + 1] == room.id)) {
+
+            for (size_t j = 0; j + 1 < dfsPath.size(); j++) {
+                if (
+                    (dfsPath[j] == room.id && dfsPath[j + 1] == neighbor.id) ||
+                    (dfsPath[j] == neighbor.id && dfsPath[j + 1] == room.id)
+                ) {
                     isDfsEdge = true;
                     break;
                 }
             }
-            // Проверяем путь Дейкстры
+
             for (size_t j = 0; j + 1 < dijPath.size(); j++) {
-                if ((dijPath[j] == room.id && dijPath[j + 1] == neighbor.id) ||
-                    (dijPath[j] == neighbor.id && dijPath[j + 1] == room.id)) {
+                if (
+                    (dijPath[j] == room.id && dijPath[j + 1] == neighbor.id) ||
+                    (dijPath[j] == neighbor.id && dijPath[j + 1] == room.id)
+                ) {
                     isDijkstraEdge = true;
                     break;
                 }
             }
 
-            // Выбираем цвет связи
+            // Цветной маршрут поверх дороги
+            // Выбираем текстуру маршрута
+            const sf::Texture* pathTexture = nullptr;
+
             if (isBfsEdge) {
-                line.setFillColor(sf::Color::Yellow);
+                pathTexture = &yellowPathTexture;
             }
             else if (isDfsEdge) {
-                line.setFillColor(sf::Color::Red);
+                pathTexture = &redPathTexture;
             }
             else if (isDijkstraEdge) {
-                line.setFillColor(sf::Color(255, 140, 0));
-            }
-            else {
-                line.setFillColor(sf::Color(130, 130, 140));
+                pathTexture = &orangePathTexture;
             }
 
-            window.draw(line);
+            // Рисуем текстуру маршрута поверх обычной дороги
+            if (pathTexturesLoaded && pathTexture != nullptr) {
+                sf::Sprite pathSprite(*pathTexture);
+
+                pathSprite.setOrigin({64.f, 64.f});
+
+                pathSprite.setPosition({
+                    (room.position.x + neighbor.position.x) / 2.f,
+                    (room.position.y + neighbor.position.y) / 2.f
+                });
+
+                pathSprite.setRotation(sf::degrees(angle + 90.f));
+                pathSprite.setScale({1.f, length / 128.f});
+
+                window.draw(pathSprite);
+            }
+
+            // Вес соединения
             sf::Text weightText(font, std::to_string(connection.weight), 12);
             weightText.setFillColor(sf::Color::White);
 
-            // Находим середину линии
-            float midX = (room.position.x + neighbor.position.x) / 2.f;
-            float midY = (room.position.y + neighbor.position.y) / 2.f;
-
-            // Вычисляем направление перпендикулярно линии
-            float offsetX = -dy / length * 12.f;
-            float offsetY = dx / length * 12.f;
-
-            // Смещаем текст относительно центра линии
             weightText.setOrigin(weightText.getLocalBounds().size / 2.f);
+
             weightText.setPosition({
-                midX + offsetX,
-                midY + offsetY
+                (room.position.x + neighbor.position.x) / 2.f,
+                (room.position.y + neighbor.position.y) / 2.f
             });
 
             window.draw(weightText);
@@ -207,30 +405,107 @@ void Game::draw(sf::RenderWindow& window)
     for (int i = 0; i < graph->getRoomCount(); i++) {
         const Room& room = graph->getRoom(i);
 
-        // Тень комнаты
-        sf::CircleShape shadow(14.f);
-        shadow.setOrigin({14.f, 14.f});
-        shadow.setPosition(room.position + sf::Vector2f(2.f, 3.f));
-        shadow.setFillColor(sf::Color(10, 10, 15, 150));
-        window.draw(shadow);
+        const sf::Texture* selectedRoom;
+        const sf::Texture* selectedTop;
+        const sf::Texture* selectedLeft;
+        const sf::Texture* selectedDown;
+        const sf::Texture* selectedRight;
 
-        // Основная комната
-        sf::CircleShape circle(14.f);
-        circle.setOrigin({14.f, 14.f});
-        circle.setPosition(room.position);
-        circle.setFillColor(sf::Color(55, 145, 210));
-        circle.setOutlineThickness(2.f);
-        circle.setOutlineColor(sf::Color(170, 215, 245));
-        window.draw(circle);
+        bool texturesLoaded;
+
+    if (room.textureSet == 1) {
+        selectedRoom = &roomTexture;
+        selectedTop = &topTexture;
+        selectedLeft = &leftTexture;
+        selectedDown = &downTexture;
+        selectedRight = &rightTexture;
+
+        texturesLoaded = roomTexturesLoaded;
+    }
+    else if (room.textureSet == 2) {
+        selectedRoom = &roomTexture2;
+        selectedTop = &topTexture2;
+        selectedLeft = &leftTexture2;
+        selectedDown = &downTexture2;
+        selectedRight = &rightTexture2;
+
+        texturesLoaded = roomTextures2Loaded;
+    }
+    else if (room.textureSet == 3){
+        selectedRoom = &roomTexture3;
+        selectedTop = &topTexture3;
+        selectedLeft = &leftTexture3;
+        selectedDown = &downTexture3;
+        selectedRight = &rightTexture3;
+
+        texturesLoaded = roomTextures3Loaded;
+    } 
+    else if (room.textureSet == 4) {
+        selectedRoom = &roomTexture4;
+        selectedTop = &topTexture4;
+        selectedLeft = &leftTexture4;
+        selectedDown = &downTexture4;
+        selectedRight = &rightTexture4;
+
+        texturesLoaded = roomTextures4Loaded;
+    }
+    else {
+        selectedRoom = &roomTexture5;
+        selectedTop = &topTexture5;
+        selectedLeft = &leftTexture5;
+        selectedDown = &downTexture5;
+        selectedRight = &rightTexture5;
+
+        texturesLoaded = roomTextures5Loaded;
+    }
+
+        // Проверяем, загружены ли текстуры
+        if (texturesLoaded) {
+            sf::Sprite roomSprite(*selectedRoom);
+            roomSprite.setOrigin({64.f, 64.f});
+            roomSprite.setPosition(room.position);
+            roomSprite.setColor(sf::Color::White);
+
+            window.draw(roomSprite);
+
+            // Рисуем проходы
+            for (const Connection& connection : room.connectedRooms) {
+                const Room& neighbor = graph->getRoom(connection.roomId);
+
+                float dx = neighbor.position.x - room.position.x;
+                float dy = neighbor.position.y - room.position.y;
+
+                const sf::Texture* doorTexture = nullptr;
+
+                if (dx > 0) {
+                    doorTexture = selectedRight;
+                }
+                else if (dx < 0) {
+                    doorTexture = selectedLeft;
+                }
+                else if (dy > 0) {
+                    doorTexture = selectedDown;
+                }
+                else if (dy < 0) {
+                    doorTexture = selectedTop;
+                }
+
+                if (doorTexture != nullptr) {
+                    sf::Sprite doorSprite(*doorTexture);
+                    doorSprite.setOrigin({64.f, 64.f});
+                    doorSprite.setPosition(room.position);
+
+                    window.draw(doorSprite);
+                }
+            }
+        }
 
         // Номер комнаты
-        sf::Text number(font, std::to_string(room.id), 11);
+        sf::Text number(font, std::to_string(room.id), 20);
         number.setFillColor(sf::Color::White);
         number.setOrigin(number.getLocalBounds().size / 2.f);
-        number.setPosition({
-            room.position.x - 0.5f,
-            room.position.y - 2.f
-        });
+        number.setPosition(room.position);
+
         window.draw(number);
     }
 
@@ -243,8 +518,35 @@ void Game::draw(sf::RenderWindow& window)
     window.draw(dfsButton);
     window.draw(dijkstraButton);
     window.draw(generateButton);
+    window.draw(fullInfoButton);
 
-    // Рисуем поля ввода
+    // Положение мыши
+    sf::Vector2f mousePos = window.mapPixelToCoords(
+        sf::Mouse::getPosition(window),
+        window.getDefaultView()
+    );
+
+    // Цвета полей при наведении
+    startInput.setFillColor(
+        startInput.getGlobalBounds().contains(mousePos)
+            ? sf::Color(75, 75, 95)
+            : sf::Color(50, 50, 65)
+    );
+
+    endInput.setFillColor(
+        endInput.getGlobalBounds().contains(mousePos)
+            ? sf::Color(75, 75, 95)
+            : sf::Color(50, 50, 65)
+    );
+
+    // Голубая рамка активного поля
+    startInput.setOutlineThickness(startInputActive ? 2.f : 0.f);
+    startInput.setOutlineColor(sf::Color::Cyan);
+
+    endInput.setOutlineThickness(endInputActive ? 2.f : 0.f);
+    endInput.setOutlineColor(sf::Color::Cyan);
+
+    // Отрисовка полей
     window.draw(startInput);
     window.draw(endInput);
 
@@ -262,6 +564,7 @@ void Game::draw(sf::RenderWindow& window)
         sf::Text panelTitle(font, "DUNGEON INFORMATION", 18);
         panelTitle.setFillColor(sf::Color::White);
         panelTitle.setPosition({35.f, 840.f});
+
         window.draw(panelTitle);
 
         if (graph != nullptr) {
@@ -281,9 +584,10 @@ void Game::draw(sf::RenderWindow& window)
             }
 
             std::ostringstream text;
+
             text << "Rooms: " << roomCount
-                << "    Connections: " << connectionCount
-                << "    Average degree: " << averageDegree;
+                 << "    Connections: " << connectionCount
+                 << "    Average degree: " << averageDegree;
 
             sf::Text dungeonSummary(font, text.str(), 14);
             dungeonSummary.setFillColor(sf::Color(200, 200, 210));
@@ -291,24 +595,26 @@ void Game::draw(sf::RenderWindow& window)
 
             window.draw(dungeonSummary);
         }
-    }
-    else {
+    } else {
         infoTitle.setString("ALGORITHM RESULTS");
         window.draw(infoTitle);
 
         sf::Text bfsInfo(font, "BFS: " + bfsResult, 11);
         bfsInfo.setFillColor(sf::Color::Yellow);
         bfsInfo.setPosition({35.f, 865.f});
+
         window.draw(bfsInfo);
 
         sf::Text dfsInfo(font, "DFS: " + dfsResult, 11);
         dfsInfo.setFillColor(sf::Color::Red);
         dfsInfo.setPosition({35.f, 882.f});
+
         window.draw(dfsInfo);
 
         sf::Text dijkstraInfo(font, "DIJKSTRA: " + dijkstraResult, 11);
         dijkstraInfo.setFillColor(sf::Color(255, 140, 0));
         dijkstraInfo.setPosition({35.f, 899.f});
+
         window.draw(dijkstraInfo);
     }
 
@@ -332,6 +638,7 @@ void Game::draw(sf::RenderWindow& window)
     title.setFillColor(sf::Color::White);
     title.setOrigin(title.getLocalBounds().size / 2.f);
     title.setPosition({959.5f, 75.f});
+
     window.draw(title);
 
     // Надпись BFS
@@ -339,6 +646,7 @@ void Game::draw(sf::RenderWindow& window)
     bfsText.setFillColor(sf::Color::White);
     bfsText.setOrigin(bfsText.getLocalBounds().size / 2.f);
     bfsText.setPosition({959.5f, 152.5f});
+
     window.draw(bfsText);
 
     // Надпись DFS
@@ -346,6 +654,7 @@ void Game::draw(sf::RenderWindow& window)
     dfsText.setFillColor(sf::Color::White);
     dfsText.setOrigin(dfsText.getLocalBounds().size / 2.f);
     dfsText.setPosition({959.5f, 217.5f});
+
     window.draw(dfsText);
 
     // Надпись Dijkstra
@@ -353,6 +662,7 @@ void Game::draw(sf::RenderWindow& window)
     dijkstraText.setFillColor(sf::Color::White);
     dijkstraText.setOrigin(dijkstraText.getLocalBounds().size / 2.f);
     dijkstraText.setPosition({959.5f, 282.5f});
+
     window.draw(dijkstraText);
 
     // Надпись Generate
@@ -360,31 +670,121 @@ void Game::draw(sf::RenderWindow& window)
     generateText.setFillColor(sf::Color::White);
     generateText.setOrigin(generateText.getLocalBounds().size / 2.f);
     generateText.setPosition({959.5f, 515.f});
+
     window.draw(generateText);
+
+    // Надпись Full Info
+    sf::Text fullInfoText(font, "FULL INFO", 12);
+    fullInfoText.setFillColor(sf::Color::White);
+    fullInfoText.setOrigin(fullInfoText.getLocalBounds().size / 2.f);
+    fullInfoText.setPosition({959.5f, 585.f});
+
+    window.draw(fullInfoText);
+
+    // Легенда алгоритмов
+    sf::Text legendTitle(font, "PATH COLORS", 14);
+    legendTitle.setFillColor(sf::Color::White);
+    legendTitle.setPosition({885.f, 630.f});
+
+    window.draw(legendTitle);
+
+    // BFS
+    sf::CircleShape bfsLegend(5.f);
+    bfsLegend.setFillColor(sf::Color::Yellow);
+    bfsLegend.setPosition({885.f, 660.f});
+
+    window.draw(bfsLegend);
+
+    sf::Text bfsLegendText(font, "BFS", 12);
+    bfsLegendText.setFillColor(sf::Color::White);
+    bfsLegendText.setPosition({905.f, 656.f});
+
+    window.draw(bfsLegendText);
+
+    // DFS
+    sf::CircleShape dfsLegend(5.f);
+    dfsLegend.setFillColor(sf::Color::Red);
+    dfsLegend.setPosition({885.f, 685.f});
+
+    window.draw(dfsLegend);
+
+    sf::Text dfsLegendText(font, "DFS", 12);
+    dfsLegendText.setFillColor(sf::Color::White);
+    dfsLegendText.setPosition({905.f, 681.f});
+
+    window.draw(dfsLegendText);
+
+    // Dijkstra
+    sf::CircleShape dijkstraLegend(5.f);
+    dijkstraLegend.setFillColor(sf::Color(255, 140, 0));
+    dijkstraLegend.setPosition({885.f, 710.f});
+
+    window.draw(dijkstraLegend);
+
+    sf::Text dijkstraLegendText(font, "DIJKSTRA", 12);
+    dijkstraLegendText.setFillColor(sf::Color::White);
+    dijkstraLegendText.setPosition({905.f, 706.f});
+
+    window.draw(dijkstraLegendText);
+
+    // Отрисовка окна полной информации
+    if (showInfoWindow && infoWindow.isOpen()) {
+        // Обрабатываем события отдельного окна
+        while (auto event = infoWindow.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
+                infoWindow.close();
+                showInfoWindow = false;
+            }
+        }
+
+        infoWindow.clear(sf::Color(35, 35, 45));
+
+        // Заголовок окна
+        sf::Text infoWindowTitle(font, "DUNGEON INFORMATION", 22);
+        infoWindowTitle.setFillColor(sf::Color::White);
+        infoWindowTitle.setPosition({20.f, 20.f});
+
+        infoWindow.draw(infoWindowTitle);
+
+        // Полная информация о комнатах
+        dungeonInfoText.setPosition({20.f, 70.f});
+
+        infoWindow.draw(dungeonInfoText);
+
+        infoWindow.display();
+    }
 }
 
-
-void Game::handleEvent(sf::RenderWindow& window, const sf::Event& event)
-{
+void Game::handleEvent(sf::RenderWindow& window, const sf::Event& event) {
     // Масштабирование графа колесиком мыши
     if (const auto* mouse = event.getIf<sf::Event::MouseWheelScrolled>()) {
+        sf::Vector2f mousePos = window.mapPixelToCoords(
+            mouse->position,
+            window.getDefaultView()
+        );
 
-        sf::Vector2f beforePos =
-            window.mapPixelToCoords(mouse->position, dungeonCamera);
+        // Если курсор над графом — масштабируем его
+        if (dungeonArea.getGlobalBounds().contains(mousePos)) {
+            sf::Vector2f beforePos = window.mapPixelToCoords(
+                mouse->position,
+                dungeonCamera
+            );
 
-        sf::Vector2f cameraSize = dungeonCamera.getSize();
+            sf::Vector2f cameraSize = dungeonCamera.getSize();
 
-        if (mouse->delta > 0 && cameraSize.x > 275.f) {
-            dungeonCamera.zoom(0.9f);
+            if (mouse->delta > 0 && cameraSize.x > 275.f) {
+                dungeonCamera.zoom(0.9f);
+            } else if (mouse->delta < 0 && cameraSize.x < 3000.f) {
+                dungeonCamera.zoom(1.1f);
+            }
+
+            sf::Vector2f afterPos = window.mapPixelToCoords(
+                mouse->position,
+                dungeonCamera
+            );
+
+            dungeonCamera.move(beforePos - afterPos);
         }
-        else if (mouse->delta < 0 && cameraSize.x < 825.f) {
-            dungeonCamera.zoom(1.1f);
-        }
-
-        sf::Vector2f afterPos =
-            window.mapPixelToCoords(mouse->position, dungeonCamera);
-
-        dungeonCamera.move(beforePos - afterPos);
     }
 
     // Нажатие мыши
@@ -394,34 +794,56 @@ void Game::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 mouse->position,
                 window.getDefaultView()
             );
+
             // Переключение нижней информационной панели
             if (infoToggleButton.getGlobalBounds().contains(mousePos)) {
                 showDungeonInfo = !showDungeonInfo;
                 return;
             }
+
+            // Открытие окна полной информации
+            if (fullInfoButton.getGlobalBounds().contains(mousePos)) {
+                showInfoWindow = true;
+                infoWindow.create(
+                    sf::VideoMode({600, 700}),
+                    "Dungeon Information"
+                );
+
+                return;
+            }
+
             // Выбираем поле ввода
             startInputActive = startInput.getGlobalBounds().contains(mousePos);
             endInputActive = endInput.getGlobalBounds().contains(mousePos);
+
             if (graph != nullptr) {
-                if(generateButton.getGlobalBounds().contains(mousePos)){
+                if (generateButton.getGlobalBounds().contains(mousePos)) {
                     graph->clear();
                     graph->GenerationRooms();
                     graph->generateConnections();
+
+                    fitDungeonToView(*graph, dungeonCamera);
+
                     dungeonInfoText.setString(graph->PrintGraph());
+
                     bfsPath.clear();
                     dfsPath.clear();
                     dijPath.clear();
+
                     bfsResult = "Not calculated";
                     dfsResult = "Not calculated";
                     dijkstraResult = "Not calculated";
+
                     infoTitle.setString("NEW DUNGEON");
                     infoContent.setString("A new dungeon has been generated");
                 }
+
                 // Проверяем, нажата ли кнопка алгоритма
                 bool algorithmButtonPressed =
                     bfsButton.getGlobalBounds().contains(mousePos) ||
                     dfsButton.getGlobalBounds().contains(mousePos) ||
                     dijkstraButton.getGlobalBounds().contains(mousePos);
+
                 if (algorithmButtonPressed) {
                     // Проверяем пустые поля
                     if (startInputText.empty() || endInputText.empty()) {
@@ -429,8 +851,10 @@ void Game::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                         infoContent.setString("Please enter both room IDs");
                         return;
                     }
+
                     int startRoom = std::stoi(startInputText);
                     int endRoom = std::stoi(endInputText);
+
                     auto makePathString = [](const std::vector<int>& path) {
                         std::ostringstream result;
 
@@ -448,49 +872,66 @@ void Game::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                         return result.str();
                     };
+
                     // Проверяем существование комнат
-                    if (startRoom >= graph->getRoomCount() ||
-                        endRoom >= graph->getRoomCount()) {
-                        infoTitle.setString("Input error");
-                        infoContent.setString("Room ID does not exist");
+                    if (
+                        startRoom < 0 ||
+                        endRoom < 0 ||
+                        startRoom >= graph->getRoomCount() ||
+                        endRoom >= graph->getRoomCount()
+                    ) {
+                        bfsResult = "Room ID does not exist";
+                        dfsResult = "Room ID does not exist";
+                        dijkstraResult = "Room ID does not exist";
+
                         return;
                     }
+
                     // BFS
                     if (bfsButton.getGlobalBounds().contains(mousePos)) {
                         bfsPath = graph->BFS(startRoom, endRoom);
 
                         if (bfsPath.empty()) {
                             bfsResult = "No path found";
-                        }
-                        else {
+                        } else {
                             bfsResult = makePathString(bfsPath);
-                            bfsResult += " | Rooms: " + std::to_string(bfsPath.size());
+
+                            bfsResult +=
+                                " | Rooms: " + std::to_string(bfsPath.size()) +
+                                " | Visited: " +
+                                std::to_string(graph->getLastVisitedCount());
                         }
+
                         dfsPath.clear();
                         dijPath.clear();
                     }
+
                     // DFS
                     if (dfsButton.getGlobalBounds().contains(mousePos)) {
                         dfsPath = graph->DFS(startRoom, endRoom);
 
                         if (dfsPath.empty()) {
                             dfsResult = "No path found";
-                        }
-                        else {
+                        } else {
                             dfsResult = makePathString(dfsPath);
-                            dfsResult += " | Rooms: " + std::to_string(dfsPath.size());
+
+                            dfsResult +=
+                                " | Rooms: " + std::to_string(dfsPath.size()) +
+                                " | Visited: " +
+                                std::to_string(graph->getLastVisitedCount());
                         }
+
                         bfsPath.clear();
                         dijPath.clear();
                     }
+
                     // Dijkstra
                     if (dijkstraButton.getGlobalBounds().contains(mousePos)) {
                         dijPath = graph->Dijkstra(startRoom, endRoom);
 
                         if (dijPath.empty()) {
                             dijkstraResult = "No path found";
-                        }
-                        else {
+                        } else {
                             int totalCost = 0;
 
                             // Считаем стоимость всех соединений маршрута
@@ -506,9 +947,14 @@ void Game::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                             }
 
                             dijkstraResult = makePathString(dijPath);
-                            dijkstraResult += " | Cost: " + std::to_string(totalCost);
-                            dijkstraResult += " | Rooms: " + std::to_string(dijPath.size());
+
+                            dijkstraResult +=
+                                " | Cost: " + std::to_string(totalCost);
+
+                            dijkstraResult +=
+                                " | Rooms: " + std::to_string(dijPath.size());
                         }
+
                         bfsPath.clear();
                         dfsPath.clear();
                     }
@@ -530,6 +976,7 @@ void Game::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 endValue.setString(endInputText);
             }
         }
+
         // Удаление через Backspace
         if (text->unicode == 8) {
             if (startInputActive && !startInputText.empty()) {
@@ -544,9 +991,10 @@ void Game::handleEvent(sf::RenderWindow& window, const sf::Event& event)
     }
 }
 
-
-void Game::setGraph(Graph& graph)
-{
+void Game::setGraph(Graph& graph) {
     this->graph = &graph;
+
     dungeonInfoText.setString(this->graph->PrintGraph());
+
+    fitDungeonToView(*this->graph, dungeonCamera);
 }

@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 class Menu {
-private:
+   private:
     bool startGame = false;
 
     sf::Font font;
@@ -15,9 +15,9 @@ private:
     sf::RectangleShape exitButton;
     sf::Text exitButtonText;
 
-    public:
+   public:
     Menu();
-    bool isStartGame() const {return startGame;}
+    bool isStartGame() const { return startGame; }
     void draw(sf::RenderWindow& window);
     void update(sf::RenderWindow& window);
     void handleEvent(sf::RenderWindow& window, const sf::Event& event);
