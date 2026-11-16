@@ -1,0 +1,60 @@
+name: Dungeon Explorer CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            libx11-dev \
+            libxrandr-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libudev-dev \
+            libfreetype-dev \
+            libgl1-mesa-dev
+
+      - name: Build and install SFML 3.0.2
+        run: |
+          git clone --depth 1 --branch 3.0.2 \
+            https://github.com/SFML/SFML.git \
+            "$RUNNER_TEMP/SFML"
+
+          cmake -S "$RUNNER_TEMP/SFML" \
+                -B "$RUNNER_TEMP/SFML/build" \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX=/usr/local \
+                -DSFML_BUILD_AUDIO=OFF \
+                -DSFML_BUILD_NETWORK=OFF \
+                -DSFML_BUILD_EXAMPLES=OFF \
+                -DSFML_BUILD_TEST_SUITE=OFF
+
+          cmake --build "$RUNNER_TEMP/SFML/build" --parallel 2
+          sudo cmake --install "$RUNNER_TEMP/SFML/build"
+
+      - name: Configure project
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=ON
+
+      - name: Build project
+        run: cmake --build build --parallel 2
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
