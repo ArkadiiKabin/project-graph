@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <climits>
+#include <cstdlib>
 #include <functional>
 #include <queue>
 #include <random>
@@ -7,7 +8,6 @@
 
 #include "Graph.hpp"
 
-// Добавление комнаты в граф.
 void Graph::addRoom(int id) {
     Room newRoom;
     newRoom.id = id;
@@ -15,12 +15,11 @@ void Graph::addRoom(int id) {
     allRooms.push_back(newRoom);
 }
 
-// Процедурная генерация комнат.
 void Graph::GenerationRooms() {
     random_device rd;
     mt19937 gen(rd());
 
-    uniform_int_distribution<> dist(8, 15);
+    uniform_int_distribution<> dist(settings.minRoomCount, settings.maxRoomCount);
     int roomCount = dist(gen);
 
     const int cellSize = 180;
@@ -30,14 +29,12 @@ void Graph::GenerationRooms() {
     vector<sf::Vector2i> positions;
     positions.push_back({0, 0});
 
-    // Формирование случайного расположения комнат.
+    // случайное расположение комнат
     while (positions.size() < roomCount) {
         vector<int> availableRooms;
 
         for (int i = 0; i < positions.size(); ++i) {
-            for (const auto& dir : vector<sf::Vector2i>{
-                {0, -1}, {0, 1}, {-1, 0}, {1, 0}
-            }) {
+            for (const auto& dir : vector<sf::Vector2i>{{0, -1}, {0, 1}, {-1, 0}, {1, 0}}) {
                 sf::Vector2i newPos = positions[i] + dir;
 
                 bool occupied = false;
@@ -56,25 +53,12 @@ void Graph::GenerationRooms() {
             }
         }
 
-        // Выбор случайной существующей комнаты.
-        uniform_int_distribution<> roomDist(
-            0,
-            availableRooms.size() - 1
-        );
-
+        uniform_int_distribution<> roomDist(0, availableRooms.size() - 1);
         int index = availableRooms[roomDist(gen)];
 
-        // Перемешивание направлений.
-        vector<sf::Vector2i> directions = {
-            {0, -1},
-            {0, 1},
-            {-1, 0},
-            {1, 0}
-        };
-
+        vector<sf::Vector2i> directions = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
         shuffle(directions.begin(), directions.end(), gen);
 
-        // Поиск свободной соседней клетки.
         for (const auto& dir : directions) {
             sf::Vector2i newPos = positions[index] + dir;
 
@@ -94,7 +78,7 @@ void Graph::GenerationRooms() {
         }
     }
 
-    // Определение границ расположения комнат.
+    // определение границ подземелья
     int minX = positions[0].x;
     int maxX = positions[0].x;
     int minY = positions[0].y;
@@ -107,7 +91,7 @@ void Graph::GenerationRooms() {
         maxY = max(maxY, pos.y);
     }
 
-    // Расчёт смещения для центрирования подземелья.
+    // центрирование подземелья
     float dungeonSize = 800.f;
     float roomRadius = 14.f;
 
@@ -117,75 +101,101 @@ void Graph::GenerationRooms() {
     offsetX = max(offsetX, roomRadius);
     offsetY = max(offsetY, roomRadius);
 
-    // Создание комнат и назначение их координат.
+    // создание комнат
     for (int i = 0; i < roomCount; ++i) {
         addRoom(i);
 
         allRooms[i].textureSet = textureDist(gen);
         allRooms[i].gridPosition = positions[i];
 
-        allRooms[i].position = {
-            20.f + offsetX + (positions[i].x - minX) * cellSize,
-            20.f + offsetY + (positions[i].y - minY) * cellSize
-        };
+        allRooms[i].position = {20.f + offsetX + (positions[i].x - minX) * cellSize,
+                                20.f + offsetY + (positions[i].y - minY) * cellSize};
     }
 }
 
-// Создание двустороннего соединения между комнатами.
 void Graph::connectRooms(int room1, int room2, int weight) {
     allRooms[room1].connectedRooms.push_back({room2, weight});
     allRooms[room2].connectedRooms.push_back({room1, weight});
 }
 
-// Генерация соединений между соседними комнатами.
 void Graph::generateConnections() {
-    if (allRooms.empty()) {
-        return;
-    }
+    if (allRooms.empty()) { return; }
 
     random_device rd;
     mt19937 gen(rd());
 
-    uniform_int_distribution<> weightDist(1, 10);
+    uniform_int_distribution<> weightDist(settings.minWeightPath, settings.maxWeightPath);
+
+    // проверка ортогонального соседства
+    auto areNeighbors = [&](int i, int j) {
+        int dx = abs(allRooms[i].gridPosition.x - allRooms[j].gridPosition.x);
+        int dy = abs(allRooms[i].gridPosition.y - allRooms[j].gridPosition.y);
+
+        return (dx == 1 && dy == 0) || (dx == 0 && dy == 1);
+    };
+
+    // проверка существующего соединения
+    auto alreadyConnected = [&](int i, int j) {
+        for (const auto& connection : allRooms[i].connectedRooms) {
+            if (connection.roomId == j) { return true; }
+        }
+
+        return false;
+    };
+
+    // создание обязательных соединений для связности
+    for (int i = 1; i < allRooms.size(); ++i) {
+        int bestNeighbor = -1;
+        int minConnections = INT_MAX;
+
+        for (int j = 0; j < i; ++j) {
+            if (areNeighbors(i, j)) {
+                int connections = allRooms[j].connectedRooms.size();
+
+                if (connections < minConnections) {
+                    minConnections = connections;
+                    bestNeighbor = j;
+                }
+            }
+        }
+
+        if (bestNeighbor != -1) { connectRooms(i, bestNeighbor, weightDist(gen)); }
+    }
+
+    // добавление дополнительных соединений
+    int maxConnections = settings.density + 1;
 
     for (int i = 0; i < allRooms.size(); ++i) {
         for (int j = i + 1; j < allRooms.size(); ++j) {
-            int dx = allRooms[i].gridPosition.x - allRooms[j].gridPosition.x;
-            int dy = allRooms[i].gridPosition.y - allRooms[j].gridPosition.y;
+            if (!areNeighbors(i, j)) { continue; }
 
-            // Соединение только ортогонально соседних комнат.
-            if (
-                ((dx == 1 || dx == -1) && dy == 0) ||
-                ((dy == -1 || dy == 1) && dx == 0)
-            ) {
+            if (alreadyConnected(i, j)) { continue; }
+
+            if (allRooms[i].connectedRooms.size() < maxConnections &&
+                allRooms[j].connectedRooms.size() < maxConnections) {
                 connectRooms(i, j, weightDist(gen));
             }
         }
     }
 }
 
-// Получение количества комнат.
 int Graph::getRoomCount() const {
     return allRooms.size();
 }
 
-// Получение комнаты по её ID.
 const Room& Graph::getRoom(int id) const {
     return allRooms[id];
 }
 
-// Формирование текстового представления графа.
-std::string Graph::PrintGraph() const {
-    std::string result;
+string Graph::PrintGraph() const {
+    string result;
 
-    for (int i = 0; i < allRooms.size(); i++) {
-        result +=
-            "Room " + std::to_string(allRooms[i].id) +
-            " is connected to: ";
+    for (int i = 0; i < allRooms.size(); ++i) {
+        result += "Room " + to_string(allRooms[i].id) + " is connected to: ";
 
         for (const Connection& connection : allRooms[i].connectedRooms) {
-            result += std::to_string(connection.roomId);
-            result += "(weight: " + std::to_string(connection.weight) + ") ";
+            result += to_string(connection.roomId);
+            result += "(weight: " + to_string(connection.weight) + ") ";
         }
 
         result += "\n";
@@ -194,17 +204,11 @@ std::string Graph::PrintGraph() const {
     return result;
 }
 
-// Поиск в ширину (Breadth-First Search).
 vector<int> Graph::BFS(int startRoomId, int endRoomId) {
     lastVisitedCount = 0;
 
-    // Проверка корректности ID комнат.
-    if (
-        startRoomId < 0 ||
-        startRoomId >= allRooms.size() ||
-        endRoomId < 0 ||
-        endRoomId >= allRooms.size()
-    ) {
+    // проверка ID комнат
+    if (startRoomId < 0 || startRoomId >= allRooms.size() || endRoomId < 0 || endRoomId >= allRooms.size()) {
         return {};
     }
 
@@ -218,14 +222,12 @@ vector<int> Graph::BFS(int startRoomId, int endRoomId) {
 
     roomsQueue.push(startRoomId);
 
-    // Обход графа в ширину.
+    // обход графа в ширину
     while (!roomsQueue.empty()) {
         int currentRoomId = roomsQueue.front();
         roomsQueue.pop();
 
-        if (currentRoomId == endRoomId) {
-            break;
-        }
+        if (currentRoomId == endRoomId) { break; }
 
         const Room& currentRoom = getRoom(currentRoomId);
 
@@ -241,14 +243,10 @@ vector<int> Graph::BFS(int startRoomId, int endRoomId) {
         }
     }
 
-    // Проверка наличия маршрута.
-    if (visited.find(endRoomId) == visited.end()) {
-        return {};
-    }
+    if (visited.find(endRoomId) == visited.end()) { return {}; }
 
-    // Восстановление найденного маршрута.
+    // восстановление маршрута
     vector<int> path;
-
     int current = endRoomId;
 
     while (current != -1) {
@@ -261,17 +259,11 @@ vector<int> Graph::BFS(int startRoomId, int endRoomId) {
     return path;
 }
 
-// Поиск в глубину (Depth-First Search).
 vector<int> Graph::DFS(int startRoomId, int endRoomId) {
     lastVisitedCount = 0;
 
-    // Проверка корректности ID комнат.
-    if (
-        startRoomId < 0 ||
-        startRoomId >= allRooms.size() ||
-        endRoomId < 0 ||
-        endRoomId >= allRooms.size()
-    ) {
+    // проверка ID комнат
+    if (startRoomId < 0 || startRoomId >= allRooms.size() || endRoomId < 0 || endRoomId >= allRooms.size()) {
         return {};
     }
 
@@ -279,57 +271,40 @@ vector<int> Graph::DFS(int startRoomId, int endRoomId) {
     targetRoomId = endRoomId;
 
     vector<int> path;
-
     DFSRecursive(startRoomId, path);
 
-    // Проверка результата поиска.
-    if (path.empty() || path.back() != endRoomId) {
-        return {};
-    }
+    if (path.empty() || path.back() != endRoomId) { return {}; }
 
     return path;
 }
 
-// Рекурсивный обход графа в глубину.
 bool Graph::DFSRecursive(int roomId, vector<int>& path) {
     visited[roomId] = true;
     lastVisitedCount++;
 
     path.push_back(roomId);
 
-    // Проверка достижения целевой комнаты.
-    if (roomId == targetRoomId) {
-        return true;
-    }
+    if (roomId == targetRoomId) { return true; }
 
     const Room& currentRoom = getRoom(roomId);
 
-    // Рекурсивный обход соседних комнат.
+    // обход соседних комнат
     for (const Connection& connection : currentRoom.connectedRooms) {
         int neighborId = connection.roomId;
 
         if (!visited[neighborId]) {
-            if (DFSRecursive(neighborId, path)) {
-                return true;
-            }
+            if (DFSRecursive(neighborId, path)) { return true; }
         }
     }
 
-    // Возврат при отсутствии подходящего пути.
     path.pop_back();
 
     return false;
 }
 
-// Поиск кратчайшего маршрута алгоритмом Дейкстры.
-std::vector<int> Graph::Dijkstra(int startRoomId, int endRoomId) {
-    // Проверка корректности ID комнат.
-    if (
-        startRoomId < 0 ||
-        startRoomId >= allRooms.size() ||
-        endRoomId < 0 ||
-        endRoomId >= allRooms.size()
-    ) {
+vector<int> Graph::Dijkstra(int startRoomId, int endRoomId) {
+    // проверка ID комнат
+    if (startRoomId < 0 || startRoomId >= allRooms.size() || endRoomId < 0 || endRoomId >= allRooms.size()) {
         return {};
     }
 
@@ -338,27 +313,17 @@ std::vector<int> Graph::Dijkstra(int startRoomId, int endRoomId) {
 
     vector<int> parent(allRooms.size(), -1);
 
-    // Очередь с приоритетом для выбора вершины
-    // с минимальным текущим расстоянием.
-    priority_queue<
-        pair<int, int>,
-        vector<pair<int, int>>,
-        greater<pair<int, int>>
-    > pq;
-
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
     pq.push({distance[startRoomId], startRoomId});
 
-    // Обход графа с учётом весов соединений.
+    // обход графа с учётом весов
     while (!pq.empty()) {
         int currentDistance = pq.top().first;
         int currentRoomId = pq.top().second;
 
         pq.pop();
 
-        // Пропуск устаревшего значения расстояния.
-        if (currentDistance > distance[currentRoomId]) {
-            continue;
-        }
+        if (currentDistance > distance[currentRoomId]) { continue; }
 
         const Room& currentRoom = getRoom(currentRoomId);
 
@@ -366,7 +331,6 @@ std::vector<int> Graph::Dijkstra(int startRoomId, int endRoomId) {
             int neighborId = connection.roomId;
             int newDist = currentDistance + connection.weight;
 
-            // Обновление расстояния до соседней комнаты.
             if (newDist < distance[neighborId]) {
                 distance[neighborId] = newDist;
                 parent[neighborId] = currentRoomId;
@@ -376,14 +340,10 @@ std::vector<int> Graph::Dijkstra(int startRoomId, int endRoomId) {
         }
     }
 
-    // Проверка наличия маршрута.
-    if (distance[endRoomId] == INT_MAX) {
-        return {};
-    }
+    if (distance[endRoomId] == INT_MAX) { return {}; }
 
-    // Восстановление найденного маршрута.
+    // восстановление маршрута
     vector<int> path;
-
     int current = endRoomId;
 
     while (current != -1) {
@@ -396,14 +356,16 @@ std::vector<int> Graph::Dijkstra(int startRoomId, int endRoomId) {
     return path;
 }
 
-// Очистка графа.
 void Graph::clear() {
     allRooms.clear();
     visited.clear();
     targetRoomId = -1;
 }
 
-// Получение количества посещённых вершин.
 int Graph::getLastVisitedCount() const {
     return lastVisitedCount;
+}
+
+void Graph::setSettings(const Settings& newSettings) {
+    settings = newSettings;
 }

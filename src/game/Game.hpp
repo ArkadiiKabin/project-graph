@@ -6,11 +6,27 @@
 
 #include "Graph.hpp"
 
+using namespace std;
+
+enum class Density { Low = 1, Medium = 2, High = 3 };
+
 class Game {
-private:
+  private:
+    bool settingsWindowOpen = false;
+
+    sf::RectangleShape settingsBackground;
+    sf::RectangleShape settingsPanel;
+    sf::RectangleShape settingsApplyButton;
+    sf::RectangleShape settingsCancelButton;
+    sf::RectangleShape settingsResetButton;
+
+    sf::Text settingsResetText;
+    sf::Text settingsTitle;
+    sf::Text settingsApplyText;
+    sf::Text settingsCancelText;
+
     sf::Font font;
 
-    // Текстуры дорог.
     sf::Texture blueRoadTexture;
     sf::Texture greenRoadTexture;
     sf::Texture brownRoadTexture;
@@ -19,14 +35,12 @@ private:
 
     bool roadTexturesLoaded = false;
 
-    // Текстуры маршрутов.
     sf::Texture yellowPathTexture;
     sf::Texture redPathTexture;
     sf::Texture orangePathTexture;
 
     bool pathTexturesLoaded = false;
 
-    // Первый набор текстур комнат.
     sf::Texture roomTexture;
     sf::Texture topTexture;
     sf::Texture leftTexture;
@@ -35,7 +49,6 @@ private:
 
     bool roomTexturesLoaded = false;
 
-    // Второй набор текстур комнат.
     sf::Texture roomTexture2;
     sf::Texture topTexture2;
     sf::Texture leftTexture2;
@@ -44,7 +57,6 @@ private:
 
     bool roomTextures2Loaded = false;
 
-    // Третий набор текстур комнат.
     sf::Texture roomTexture3;
     sf::Texture topTexture3;
     sf::Texture leftTexture3;
@@ -53,7 +65,6 @@ private:
 
     bool roomTextures3Loaded = false;
 
-    // Четвёртый набор текстур комнат.
     sf::Texture roomTexture4;
     sf::Texture topTexture4;
     sf::Texture leftTexture4;
@@ -62,7 +73,6 @@ private:
 
     bool roomTextures4Loaded = false;
 
-    // Пятый набор текстур комнат.
     sf::Texture roomTexture5;
     sf::Texture topTexture5;
     sf::Texture leftTexture5;
@@ -71,13 +81,12 @@ private:
 
     bool roomTextures5Loaded = false;
 
-    // Граф и игровая область.
     Graph* graph = nullptr;
+    Settings generationSettings;
 
     sf::RectangleShape dungeonArea;
     sf::View dungeonCamera;
 
-    // Правая панель управления.
     sf::RectangleShape controlPanel;
 
     sf::RectangleShape bfsButton;
@@ -87,7 +96,42 @@ private:
     sf::RectangleShape generateButton;
     sf::RectangleShape fullInfoButton;
 
-    // Поля ввода комнат.
+    sf::RectangleShape minCountRoomInput;
+    sf::RectangleShape maxCountRoomInput;
+
+    sf::Text minCountRoomLabel;
+    sf::Text maxCountRoomLabel;
+    sf::Text minCountRoomValue;
+    sf::Text maxCountRoomValue;
+
+    string minCountRoomText = "8";
+    string maxCountRoomText = "15";
+
+    bool minCountRoomActive = false;
+    bool maxCountRoomActive = false;
+
+    sf::RectangleShape minWeightInput;
+    sf::RectangleShape maxWeightInput;
+
+    sf::Text minWeightLabel;
+    sf::Text maxWeightLabel;
+    sf::Text minWeightValue;
+    sf::Text maxWeightValue;
+
+    string minWeightText = "1";
+    string maxWeightText = "10";
+
+    bool minWeightActive = false;
+    bool maxWeightActive = false;
+
+    sf::RectangleShape densityInput;
+    sf::Text densityLabel;
+    sf::Text densityValue;
+
+    Density density = Density::Medium;
+    bool densityListOpen = false;
+    sf::RectangleShape densityOptions[3];
+
     sf::RectangleShape startInput;
     sf::RectangleShape endInput;
 
@@ -97,42 +141,35 @@ private:
     sf::Text startValue;
     sf::Text endValue;
 
-    std::string startInputText = "0";
-    std::string endInputText = "8";
+    string startInputText = "0";
+    string endInputText = "8";
 
     bool startInputActive = false;
     bool endInputActive = false;
 
-    // Найденные маршруты.
     vector<int> bfsPath;
     vector<int> dfsPath;
     vector<int> dijPath;
 
-    // Результаты алгоритмов.
-    std::string bfsResult = "Not calculated";
-    std::string dfsResult = "Not calculated";
-    std::string dijkstraResult = "Not calculated";
+    string bfsResult = "Not calculated";
+    string dfsResult = "Not calculated";
+    string dijkstraResult = "Not calculated";
 
-    // Нижняя информационная панель.
+    sf::RectangleShape settingsButton;
+    sf::Text settingsButtonText;
+
     sf::RectangleShape infoPanel;
-
     sf::Text infoTitle;
-    sf::Text infoContent;
 
     sf::RectangleShape infoToggleButton;
     bool showDungeonInfo = false;
 
-    // Информация о подземелье.
-    sf::RectangleShape dungeonInfoPanel;
     sf::Text dungeonInfoText;
 
-    float dungeonInfoScroll = 0.f;
-
-    // Окно полной информации.
     sf::RenderWindow infoWindow;
     bool showInfoWindow = false;
 
-public:
+  public:
     Game();
 
     void draw(sf::RenderWindow& window);

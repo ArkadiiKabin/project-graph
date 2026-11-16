@@ -6,13 +6,11 @@
 
 using namespace std;
 
-// Информация о соединении между комнатами.
 struct Connection {
     int roomId;
     int weight;
 };
 
-// Информация о комнате.
 struct Room {
     int id;
     sf::Vector2f position;
@@ -21,18 +19,27 @@ struct Room {
     int textureSet = 1;
 };
 
+struct Settings {
+    int minRoomCount = 8;
+    int maxRoomCount = 15;
+    int minWeightPath = 1;
+    int maxWeightPath = 10;
+    int density = 2; // 1 - низкая, 2 - средняя, 3 - высокая
+};
+
 class Graph {
-private:
+  private:
     vector<bool> visited;
     vector<Room> allRooms;
 
     int lastVisitedCount = 0;
     int targetRoomId = -1;
 
-    void arrangeRooms();
+    Settings settings;
+
     bool DFSRecursive(int roomId, vector<int>& path);
 
-public:
+  public:
     void addRoom(int id);
     void GenerationRooms();
 
@@ -50,5 +57,6 @@ public:
 
     int getLastVisitedCount() const;
 
+    void setSettings(const Settings& newSettings);
     void clear();
 };
