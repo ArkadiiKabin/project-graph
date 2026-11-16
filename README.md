@@ -1,370 +1,300 @@
 # Dungeon Explorer
 
 <p align="center">
-  <img src="screenshots/dungeonBase.png" alt="Dungeon Explorer - Generated Dungeon" width="800">
+  <img src="screenshots/dungeonBase.png" alt="Dungeon Explorer — сгенерированное подземелье" width="800">
 </p>
 
-> **Разработка игровой системы генерации подземелий и поиска маршрутов
-> на основе графов**\
-> *Procedural Dungeon Generation and Graph-Based Pathfinding System*
-
-A C++17 application for procedural dungeon generation, graph
-construction, and visual pathfinding. The project combines randomly
-generated dungeon layouts with classic graph traversal and shortest-path
-algorithms, allowing users to explore how graph structures and
-algorithms behave in a visual environment.
-
-------------------------------------------------------------------------
-
-## Table of Contents
-
--   [Overview](#overview)
--   [Project Goals](#project-goals)
--   [Features](#features)
--   [Explorer Mode](#explorer-mode)
--   [Procedural Dungeon Generation](#procedural-dungeon-generation)
--   [Graph Model](#graph-model)
--   [Pathfinding Algorithms](#pathfinding-algorithms)
--   [Generation Settings](#generation-settings)
--   [Visual System](#visual-system)
--   [Project Architecture](#project-architecture)
--   [Technologies](#technologies)
--   [Requirements](#requirements)
--   [Build and Run](#build-and-run)
--   [Using the Application](#using-the-application)
--   [Project Roadmap](#project-roadmap)
--   [Planned Game Modes](#planned-game-modes)
--   [Current Project Status](#current-project-status)
-
-------------------------------------------------------------------------
-
-## Overview
-
-Dungeon Explorer is a graphical application focused on procedural
-dungeon generation and graph-based pathfinding.
-
-Each generated dungeon consists of rooms connected by passages. The room
-layout forms the visual representation of a graph: rooms act as
-vertices, while passages between rooms act as edges. Connections can
-have weights, which are used by weighted pathfinding algorithms.
-
-The application makes it possible to generate different dungeon layouts,
-configure generation parameters, inspect the resulting graph, and
-compare the routes found by several well-known algorithms.
-
-The project is designed both as an interactive application and as a
-practical demonstration of graph theory, procedural generation, and
-pathfinding.
-
-## Project Goals
-
-The main goals of the project are:
-
--   Develop a system for procedural generation of dungeon layouts
--   Represent generated dungeons as connected graphs
--   Implement and demonstrate graph traversal and shortest-path
-    algorithms
--   Visualize graph connections, edge weights, and calculated routes
--   Provide configurable generation parameters
--   Build a foundation for future gameplay-oriented features
-
-## Features
-
-### Implemented
+> **Разработка игровой системы генерации подземелий и поиска маршрутов на основе графов**
 
--   Procedural generation of dungeon rooms
--   Randomized room count within configurable limits
--   Grid-based room placement
--   Orthogonal connections between adjacent rooms
--   Connected dungeon graph generation
--   Prevention of duplicate connections
--   Configurable graph density
--   Random edge weights within a configurable range
--   BFS, DFS, and Dijkstra pathfinding algorithms
--   Visual highlighting of calculated routes
--   Separate visual styles for different pathfinding algorithms
--   Multiple room texture sets
--   Weighted corridor visualization
--   Automatic dungeon fitting within the view
--   Generation settings window with Apply, Cancel, and Reset actions
+Приложение на C++17 для процедурной генерации подземелий, построения графов и визуализации поиска маршрутов. Проект объединяет случайную генерацию структуры подземелий с классическими алгоритмами обхода графов и поиска кратчайших путей, позволяя наглядно изучать работу графовых структур и алгоритмов.
 
-------------------------------------------------------------------------
+---
 
-## Explorer Mode
+## Содержание
 
-Explorer Mode is the currently implemented application mode. It focuses
-on generating dungeons and exploring their underlying graph structure.
+- [Обзор проекта](#обзор-проекта)
+- [Цели проекта](#цели-проекта)
+- [Возможности](#возможности)
+- [Режим Explorer Mode](#режим-explorer-mode)
+- [Процедурная генерация подземелий](#процедурная-генерация-подземелий)
+- [Модель графа](#модель-графа)
+- [Алгоритмы поиска маршрутов](#алгоритмы-поиска-маршрутов)
+- [Настройки генерации](#настройки-генерации)
+- [Визуальная система](#визуальная-система)
+- [Структура проекта](#структура-проекта)
+- [Используемые технологии](#используемые-технологии)
+- [Системные требования](#системные-требования)
+- [Сборка и запуск](#сборка-и-запуск)
+- [Использование приложения](#использование-приложения)
+- [Планы развития](#планы-развития)
+- [Планируемые игровые режимы](#планируемые-игровые-режимы)
+- [Текущий статус проекта](#текущий-статус-проекта)
 
-The user can generate a dungeon, adjust generation parameters, and run
-pathfinding algorithms on the resulting graph. The application displays
-the dungeon layout, its passages, connection weights, and the route
-produced by the selected algorithm.
+---
 
-Explorer Mode includes:
+## Обзор проекта
 
-1.  **Dungeon generation** --- creates a new randomized room layout.
-2.  **Graph construction** --- connects orthogonally adjacent rooms.
-3.  **Pathfinding** --- runs BFS, DFS, or Dijkstra on the generated
-    graph.
-4.  **Route visualization** --- highlights the route found by the
-    selected algorithm.
-5.  **Generation configuration** --- allows the user to adjust room
-    count, edge weights, and graph density.
+Dungeon Explorer — графическое приложение, посвящённое процедурной генерации подземелий и поиску маршрутов на основе графов.
 
-Explorer Mode is considered functionally complete for the current
-project stage. Future gameplay systems are planned as a separate mode
-rather than as additional complexity in this mode.
+Каждое сгенерированное подземелье состоит из комнат, соединённых проходами. Расположение комнат представляет собой визуальную модель графа: комнаты выступают в роли вершин, а проходы между ними — в роли рёбер. Каждое соединение может иметь вес, который используется алгоритмами поиска кратчайшего пути.
 
-## Procedural Dungeon Generation
+Приложение позволяет генерировать различные планировки подземелий, настраивать параметры генерации, изучать полученную структуру графа и сравнивать маршруты, найденные несколькими известными алгоритмами.
 
-Dungeon generation is based on a logical two-dimensional grid.
+Проект задуман как интерактивное приложение и практическая демонстрация теории графов, процедурной генерации и алгоритмов поиска маршрутов.
 
-### Room placement
+## Цели проекта
 
--   The first room is placed at the starting grid coordinate `(0, 0)`.
--   Additional rooms are placed one at a time.
--   Each new room is placed in an available orthogonal cell next to an
-    already existing room.
--   The generation process continues until the randomly selected room
-    count is reached.
--   The room count is controlled by the generation settings.
+Основные цели проекта:
 
-This growth-based approach creates a connected layout during room
-placement and avoids placing rooms on the same grid cell.
+- Разработать систему процедурной генерации подземелий
+- Представить сгенерированные подземелья в виде связных графов
+- Реализовать и продемонстрировать алгоритмы обхода графов и поиска кратчайших путей
+- Визуализировать соединения графа, веса рёбер и найденные маршруты
+- Предусмотреть возможность настройки параметров генерации
+- Создать основу для дальнейшего добавления игровых механик
 
-### Room connections
+## Возможности
 
-After room placement, the system constructs graph connections between
-rooms.
+### Реализовано
 
-Only orthogonal neighbours can be connected:
+- Процедурная генерация комнат подземелья
+- Случайное количество комнат в заданном диапазоне
+- Размещение комнат на условной сетке
+- Ортогональные соединения между соседними комнатами
+- Генерация связного графа подземелья
+- Предотвращение повторных соединений
+- Настраиваемая плотность графа
+- Случайные веса рёбер в заданном диапазоне
+- Алгоритмы поиска BFS, DFS и Dijkstra
+- Визуальное выделение найденных маршрутов
+- Отдельные визуальные стили для результатов разных алгоритмов
+- Несколько наборов текстур комнат
+- Визуализация коридоров и их весов
+- Автоматическое масштабирование подземелья под доступную область просмотра
+- Окно настроек генерации с кнопками Apply, Cancel и Reset
 
--   Up
--   Down
--   Left
--   Right
+---
 
-Diagonal room positions do not create diagonal graph connections.
+## Режим Explorer Mode
 
-Connection generation is performed in two stages:
+Explorer Mode — основной реализованный режим приложения. Он предназначен для генерации подземелий и изучения лежащей в их основе структуры графа.
 
-1.  **Connectivity stage** --- each room added after the starting room
-    is connected to an earlier orthogonal neighbour. This preserves
-    connectivity of the generated graph.
-2.  **Additional connections stage** --- the system checks orthogonally
-    adjacent room pairs and may add extra connections according to the
-    configured graph density.
+Пользователь может создать подземелье, настроить параметры генерации и запустить алгоритмы поиска маршрутов на полученном графе. Приложение отображает расположение комнат, проходы между ними, веса соединений и маршрут, найденный выбранным алгоритмом.
 
-Existing connections are not duplicated.
+Explorer Mode включает следующие возможности:
 
-Connectivity has priority over the optional density limit: the system
-must preserve a connected dungeon even when a mandatory connection
-causes a room to exceed the preferred maximum degree.
+1. **Генерация подземелья** — создание новой случайной планировки комнат.
+2. **Построение графа** — соединение ортогонально соседних комнат.
+3. **Поиск маршрутов** — запуск BFS, DFS или Dijkstra на сгенерированном графе.
+4. **Визуализация маршрута** — выделение пути, найденного выбранным алгоритмом.
+5. **Настройка генерации** — изменение количества комнат, диапазона весов рёбер и плотности графа.
 
-### Connection weights
+На текущем этапе Explorer Mode считается функционально завершённым. Дальнейшее развитие проекта будет сосредоточено на отдельном игровом режиме, а не на добавлении новых функций в этот режим.
 
-Each graph edge receives a random weight from the configured minimum and
-maximum values.
+## Процедурная генерация подземелий
 
-These weights are used by Dijkstra's algorithm and are also displayed in
-the dungeon view.
+Генерация подземелья основана на условной двумерной сетке.
 
-------------------------------------------------------------------------
+### Размещение комнат
 
-## Graph Model
+- Первая комната размещается в начальной координате сетки `(0, 0)`.
+- Остальные комнаты добавляются по одной.
+- Каждая новая комната размещается в свободной ортогональной клетке рядом с уже существующей комнатой.
+- Генерация продолжается до достижения случайно выбранного количества комнат.
+- Количество комнат определяется настройками генерации.
 
-The generated dungeon is represented as an undirected weighted graph.
+Такой подход позволяет формировать связную структуру непосредственно в процессе размещения комнат и предотвращает размещение нескольких комнат в одной клетке.
 
-  Dungeon element      Graph element
-  -------------------- ---------------------
-  Room                 Vertex (node)
-  Passage / corridor   Edge
-  Corridor weight      Edge weight
-  Dungeon layout       Graph visualization
+### Соединение комнат
 
-The graph is undirected because a passage connects two rooms in both
-directions.
+После размещения комнат система строит графовые соединения между ними.
 
-The graph is weighted because every connection has a numerical cost.
-This allows the application to demonstrate both unweighted traversal
-algorithms and weighted shortest-path search.
+Соединяться могут только ортогонально соседние комнаты:
 
-The generation process aims to produce a connected graph, so every
-generated room can be reached from the starting room.
+- Вверх
+- Вниз
+- Влево
+- Вправо
 
-## Pathfinding Algorithms
+Диагональное расположение комнат не создаёт диагональных соединений графа.
 
-The application implements three graph algorithms.
+Генерация соединений выполняется в два этапа:
 
-### Breadth-First Search (BFS)
+1. **Обеспечение связности** — каждая комната, добавленная после начальной, соединяется с одной из ранее созданных ортогонально соседних комнат. Это позволяет сохранить связность графа.
+2. **Добавление дополнительных соединений** — система проверяет пары ортогонально соседних комнат и может создавать дополнительные связи с учётом установленной плотности графа.
 
-Breadth-First Search explores the graph level by level, visiting
-neighbouring vertices before moving farther away from the starting
-vertex.
+Повторные соединения не создаются.
 
--   Uses a queue
--   Finds a path with the minimum number of edges in an unweighted graph
--   Does not use corridor weights when choosing the route
+Связность имеет приоритет над ограничением плотности: система должна гарантировать связность подземелья, даже если обязательное соединение приводит к превышению предпочтительного максимального количества связей у комнаты.
 
-**Visualization:** BFS routes are highlighted in yellow.
+### Веса соединений
 
-![BFS pathfinding result](screenshots/bfsTry.png)
+Каждое ребро графа получает случайный вес из установленного минимального и максимального диапазона.
 
-### Depth-First Search (DFS)
+Эти веса используются алгоритмом Dijkstra, а также отображаются непосредственно в подземелье.
 
-Depth-First Search explores as far as possible along one branch before
-backtracking.
+---
 
--   Uses a stack or recursive traversal
--   Explores the graph depth-first
--   Finds a valid route when one exists, but does not guarantee the
-    route with the fewest edges or the lowest total weight
+## Модель графа
 
-**Visualization:** DFS routes are highlighted in red.
+Сгенерированное подземелье представляется в виде неориентированного взвешенного графа.
 
-![DFS pathfinding result](screenshots/dfsTry.png)
+| Элемент подземелья | Элемент графа |
+|---|---|
+| Комната | Вершина (узел) |
+| Проход / коридор | Ребро |
+| Вес коридора | Вес ребра |
+| Планировка подземелья | Визуальное представление графа |
 
-### Dijkstra's Algorithm
+Граф является неориентированным, поскольку проход соединяет две комнаты в обоих направлениях.
 
-Dijkstra's algorithm finds a minimum-total-weight path from the starting
-vertex to the destination when edge weights are non-negative.
+Граф является взвешенным, поскольку каждое соединение имеет числовую стоимость. Это позволяет демонстрировать как алгоритмы обхода графа, так и поиск кратчайшего пути с учётом весов.
 
--   Takes corridor weights into account
--   Maintains the best known distance to each vertex
--   Updates routes when a lower-cost path is found
+Процесс генерации направлен на создание связного графа, поэтому из начальной комнаты можно добраться до любой другой сгенерированной комнаты.
 
-**Visualization:** Dijkstra routes are highlighted in orange.
+## Алгоритмы поиска маршрутов
 
-![Dijkstra pathfinding result](screenshots/dijTry.png)
+В приложении реализованы три алгоритма работы с графами.
 
-### Comparing the algorithms
+### Поиск в ширину (BFS)
 
-  -----------------------------------------------------------------------
-  Algorithm         Uses edge weights Main search       Route guarantee
-                                      principle         
-  ----------------- ----------------- ----------------- -----------------
-  BFS               No                Level-by-level    Minimum number of
-                                      traversal         edges
+Breadth-First Search — алгоритм, который исследует граф по уровням, сначала посещая ближайшие к начальной вершине вершины, а затем переходя к более удалённым.
 
-  DFS               No                Depth-first       A valid route,
-                                      traversal         not necessarily
-                                                        optimal
+- Использует очередь
+- Находит маршрут с минимальным количеством рёбер в невзвешенном графе
+- Не учитывает веса коридоров при выборе маршрута
 
-  Dijkstra          Yes               Minimum           Minimum total
-                                      accumulated cost  weight for
-                                                        non-negative
-                                                        weights
-  -----------------------------------------------------------------------
+**Визуализация:** найденный маршрут BFS выделяется жёлтым цветом.
 
-The routes may differ because the algorithms optimize or prioritize
-different things. In particular, the route with the fewest connections
-is not necessarily the route with the lowest total weight.
+![Результат поиска маршрута с помощью BFS](screenshots/bfsTry.png)
 
-------------------------------------------------------------------------
+### Поиск в глубину (DFS)
 
-## Generation Settings
+Depth-First Search — алгоритм, который старается пройти как можно дальше по одной ветви графа, прежде чем вернуться назад и исследовать другие направления.
 
-Dungeon generation can be configured through the Settings window.
+- Использует стек или рекурсивный обход
+- Исследует граф в глубину
+- Находит допустимый маршрут, если он существует, но не гарантирует минимальное количество рёбер или минимальный суммарный вес
 
-### Room count
+**Визуализация:** найденный маршрут DFS выделяется красным цветом.
 
-Controls the minimum and maximum number of rooms that may be generated.
+![Результат поиска маршрута с помощью DFS](screenshots/dfsTry.png)
 
--   Minimum Rooms
--   Maximum Rooms
+### Алгоритм Дейкстры (Dijkstra)
 
-The generated room count is selected randomly within the configured
-inclusive range.
+Алгоритм Дейкстры находит путь с минимальным суммарным весом от начальной вершины до конечной при условии, что веса рёбер неотрицательны.
 
-### Path weight
+- Учитывает веса коридоров
+- Хранит наилучшее известное расстояние до каждой вершины
+- Обновляет маршруты, если находит путь с меньшей стоимостью
 
-Controls the range of random weights assigned to connections.
+**Визуализация:** найденный маршрут Dijkstra выделяется оранжевым цветом.
 
--   Minimum Path Weight
--   Maximum Path Weight
+![Результат поиска маршрута с помощью Dijkstra](screenshots/dijTry.png)
 
-The minimum value must not exceed the maximum value.
+### Сравнение алгоритмов
 
-### Graph density
+| Алгоритм | Учитывает веса рёбер | Принцип работы | Гарантия результата |
+|---|---|---|---|
+| BFS | Нет | Обход по уровням | Минимальное количество рёбер |
+| DFS | Нет | Обход в глубину | Допустимый маршрут, не обязательно оптимальный |
+| Dijkstra | Да | Выбор вершины с минимальной накопленной стоимостью | Минимальный суммарный вес при неотрицательных весах |
 
-Controls how many additional connections may be generated between
-adjacent rooms.
+Результаты работы алгоритмов могут отличаться, поскольку каждый из них использует собственный принцип поиска. В частности, маршрут с наименьшим количеством соединений не обязательно имеет наименьший суммарный вес.
 
-  Setting     Value Description
-  --------- ------- ------------------------------------
-  Low             1 Lower target connection density
-  Medium          2 Moderate target connection density
-  High            3 Higher target connection density
+---
 
-The density value is used to determine the preferred maximum number of
-connections per room for optional connections. Mandatory connections
-required to preserve graph connectivity take priority.
+## Настройки генерации
 
-### Applying settings
+Параметры генерации подземелья можно изменять в отдельном окне Settings.
 
-The generation settings interface is shown below.
+### Количество комнат
 
-![Dungeon generation settings](screenshots/settingsDungeon.png)
+Определяет минимальное и максимальное количество комнат, которые могут быть сгенерированы.
 
-The settings window provides three actions:
+- Minimum Rooms — минимальное количество комнат
+- Maximum Rooms — максимальное количество комнат
 
--   **Apply** --- validates and applies the configured values.
--   **Cancel** --- closes the settings window without applying the
-    current draft.
--   **Reset** --- restores the default values in the settings form. The
-    reset values must still be applied.
+Итоговое количество комнат выбирается случайным образом в пределах заданного диапазона, включая его границы.
 
-------------------------------------------------------------------------
+### Вес соединений
 
-## Visual System
+Определяет диапазон случайных весов, присваиваемых соединениям между комнатами.
 
-The visual layer presents the generated graph as a dungeon.
+- Minimum Path Weight — минимальный вес соединения
+- Maximum Path Weight — максимальный вес соединения
 
-### Room appearance
+Минимальное значение не должно превышать максимальное.
 
-The project includes five room texture sets:
+### Плотность графа
 
--   `room_1` --- pink
--   `room_2` --- green
--   `room_3` --- blue
--   `room_4` --- grey
--   `room_5` --- brown
+Определяет, сколько дополнительных соединений может быть создано между соседними комнатами.
 
-Each room texture set contains a base room image and transparent
-overlays for passages on the top, left, bottom, and right sides.
+| Настройка | Значение | Описание |
+|---|---:|---|
+| Low | 1 | Низкая предпочтительная плотность соединений |
+| Medium | 2 | Средняя предпочтительная плотность соединений |
+| High | 3 | Высокая предпочтительная плотность соединений |
 
-### Corridors
+Значение плотности используется для определения предпочтительного максимального количества соединений комнаты при добавлении дополнительных рёбер. Обязательные соединения, необходимые для сохранения связности графа, имеют приоритет.
 
-Connections between rooms are rendered using corridor textures. The
-ordinary corridor appearance is selected according to the texture set
-associated with the room.
+### Применение настроек
 
-### Path visualization
+Ниже показано окно настроек генерации подземелья.
 
-The application uses distinct corridor textures to distinguish algorithm
-results:
+![Окно настроек генерации подземелья](screenshots/settingsDungeon.png)
 
-  Algorithm   Route colour
-  ----------- --------------
-  BFS         Yellow
-  DFS         Red
-  Dijkstra    Orange
+Окно настроек предоставляет три действия:
 
-Only the currently selected algorithm route is displayed at a time.
-Running another algorithm replaces the previous highlighted route.
+- **Apply** — проверяет введённые значения и применяет настройки.
+- **Cancel** — закрывает окно без применения текущих изменений.
+- **Reset** — восстанавливает значения по умолчанию в полях настроек. Для применения восстановленных значений необходимо дополнительно нажать Apply.
 
-### Dungeon view
+---
 
-The dungeon is fitted to the available view so that generated layouts
-can be inspected even when their dimensions vary.
+## Визуальная система
 
-------------------------------------------------------------------------
+Визуальная система представляет сгенерированный граф в виде подземелья.
 
-## Project Architecture
+### Внешний вид комнат
 
-The project is organized into UI and game-logic components.
+В проекте предусмотрено пять наборов текстур комнат:
 
-``` text
+- `room_1` — розовый
+- `room_2` — зелёный
+- `room_3` — синий
+- `room_4` — серый
+- `room_5` — коричневый
+
+Каждый набор текстур содержит основное изображение комнаты и прозрачные накладки для проходов сверху, слева, снизу и справа.
+
+### Коридоры
+
+Соединения между комнатами отображаются с помощью текстур коридоров. Внешний вид обычного коридора выбирается в соответствии с набором текстур комнаты.
+
+### Визуализация маршрутов
+
+Для отображения результатов алгоритмов используются отдельные текстуры коридоров:
+
+| Алгоритм | Цвет маршрута |
+|---|---|
+| BFS | Жёлтый |
+| DFS | Красный |
+| Dijkstra | Оранжевый |
+
+Одновременно отображается только маршрут последнего запущенного алгоритма. Запуск другого алгоритма заменяет ранее выделенный маршрут.
+
+### Отображение подземелья
+
+Размер подземелья автоматически подстраивается под доступную область просмотра. Это позволяет просматривать сгенерированные планировки независимо от их размеров.
+
+---
+
+## Структура проекта
+
+Проект разделён на компоненты пользовательского интерфейса и игровой логики.
+
+```text
 project-graph/
 ├── CMakeLists.txt
 ├── assets/
@@ -389,176 +319,150 @@ project-graph/
         └── Graph.cpp
 ```
 
-### Main components
+### Основные компоненты
 
-  ---------------------------------------------------------------------
-  File                               Responsibility
-  ---------------------------------- ----------------------------------
-  `main.cpp`                         Application entry point
+| Файл | Назначение |
+|---|---|
+| `main.cpp` | Точка входа в приложение |
+| `ui/Menu.h` / `ui/Menu.cpp` | Интерфейс главного меню |
+| `game/Game.hpp` / `game/Game.cpp` | Основной игровой цикл, отрисовка, обработка ввода и состояние приложения |
+| `game/Graph.hpp` / `game/Graph.cpp` | Структура графа, генерация подземелья, соединения, веса и алгоритмы поиска |
+| `CMakeLists.txt` | Конфигурация сборки проекта с помощью CMake |
+| `assets/` | Шрифты и визуальные ресурсы |
 
-  `ui/Menu.h` / `ui/Menu.cpp`        Main menu interface
+Архитектура разделяет графическую часть приложения и логику работы с графами и генерацией подземелий.
 
-  `game/Game.hpp` / `game/Game.cpp`  Main game/application loop,
-                                     rendering, input handling, and
-                                     application state
+---
 
-  `game/Graph.hpp` /                 Graph data, dungeon generation,
-  `game/Graph.cpp`                   connections, weights, and
-                                     pathfinding
+## Используемые технологии
 
-  `CMakeLists.txt`                   CMake build configuration
+- **C++17** — основной язык программирования
+- **SFML 3.0.2** — графика, управление окном и обработка ввода
+- **CMake** — конфигурация проекта и система сборки
+- **Git** — система контроля версий
 
-  `assets/`                          Fonts and visual resources
-  ---------------------------------------------------------------------
+## Системные требования
 
-The architecture separates the graphical application layer from the
-graph and generation logic.
+Для сборки проекта необходимы:
 
-------------------------------------------------------------------------
+- Компилятор C++ с поддержкой стандарта C++17
+- CMake
+- Библиотеки разработки SFML 3.0.2
+- Git (необязательно, для клонирования репозитория)
 
-## Technologies
+Точная процедура установки SFML зависит от операционной системы и используемого менеджера пакетов.
 
--   **C++17** --- primary programming language
--   **SFML 3.0.2** --- graphics, window management, and input handling
--   **CMake** --- project configuration and build system
--   **Git** --- version control
+## Сборка и запуск
 
-## Requirements
+Следующие команды предназначены для Linux при условии, что все необходимые зависимости уже установлены.
 
-To build the project, you need:
+### 1. Клонирование репозитория
 
--   A C++ compiler with C++17 support
--   CMake
--   SFML 3.0.2 development libraries
--   Git (optional, for cloning the repository)
-
-The exact SFML installation procedure depends on the operating system
-and package manager.
-
-## Build and Run
-
-The following commands are intended for a Linux environment with the
-required dependencies installed.
-
-### 1. Clone the repository
-
-``` bash
+```bash
 git clone https://github.com/ArkadiiKabin/project-graph.git
 cd project-graph
 ```
 
-### 2. Configure the project
+### 2. Конфигурация проекта
 
-``` bash
+```bash
 cmake -S . -B build
 ```
 
-### 3. Build
+### 3. Сборка
 
-``` bash
+```bash
 cmake --build build
 ```
 
-### 4. Run
+### 4. Запуск
 
-``` bash
+```bash
 ./build/DungeonExplorer
 ```
 
-If CMake cannot find SFML, make sure the SFML 3.0.2 development package
-is installed and available to CMake.
+Если CMake не может найти SFML, убедитесь, что библиотеки разработки SFML 3.0.2 установлены и доступны системе сборки.
 
-------------------------------------------------------------------------
+---
 
-## Using the Application
+## Использование приложения
 
-A typical Explorer Mode session follows this sequence:
+Типичный сценарий работы в Explorer Mode:
 
-1.  Launch the application.
-2.  Open the dungeon generation settings if you want to change the
-    defaults.
-3.  Set the room count range, path weight range, and graph density.
-4.  Apply the settings.
-5.  Generate a dungeon.
-6.  Select a pathfinding algorithm.
-7.  Inspect the highlighted route and the generated dungeon graph.
-8.  Generate another dungeon to explore a different layout.
+1. Запустить приложение.
+2. При необходимости открыть настройки генерации подземелья.
+3. Установить диапазон количества комнат, диапазон весов соединений и плотность графа.
+4. Нажать Apply для применения настроек.
+5. Сгенерировать подземелье.
+6. Выбрать алгоритм поиска маршрута.
+7. Изучить выделенный маршрут и структуру сгенерированного графа.
+8. Сгенерировать новое подземелье, чтобы исследовать другую планировку.
 
-The exact on-screen controls are defined by the application interface.
+Точные элементы управления определяются интерфейсом самого приложения.
 
-------------------------------------------------------------------------
+---
 
-## Project Roadmap
+## Планы развития
 
-The current focus is to preserve the completed Explorer Mode
-functionality and develop a separate gameplay-oriented mode.
+На текущем этапе основная задача — сохранить завершённую функциональность Explorer Mode и приступить к разработке отдельного игрового режима.
 
-  Feature                                     Status
-  ------------------------------------------- -------------
-  Explorer Mode                               Complete
-  Procedural room generation                  Complete
-  Connected graph generation                  Complete
-  BFS pathfinding                             Complete
-  DFS pathfinding                             Complete
-  Dijkstra pathfinding                        Complete
-  Generation settings                         Complete
-  Route and corridor visualization            Complete
-  Adventure Mode                              Planned
-  Additional room types and gameplay events   Planned
-  Keys, doors, and locked rooms               Planned
-  Multiple dungeon floors                     Planned
-  Boss encounters and progression             Planned
-  Dungeon Editor                              Future idea
+| Возможность | Статус |
+|---|---|
+| Explorer Mode | Завершено |
+| Процедурная генерация комнат | Завершено |
+| Генерация связного графа | Завершено |
+| Поиск маршрутов с помощью BFS | Завершено |
+| Поиск маршрутов с помощью DFS | Завершено |
+| Поиск маршрутов с помощью Dijkstra | Завершено |
+| Настройки генерации | Завершено |
+| Визуализация маршрутов и коридоров | Завершено |
+| Adventure Mode | Запланировано |
+| Дополнительные типы комнат и игровые события | Запланировано |
+| Ключи, двери и запертые комнаты | Запланировано |
+| Несколько этажей подземелья | Запланировано |
+| Битвы с боссами и система прогрессии | Запланировано |
+| Dungeon Editor | Идея на будущее |
 
-Planned features describe the intended direction of development and are
-not part of the currently implemented feature set.
+Перечисленные планы описывают предполагаемое направление развития проекта и не относятся к уже реализованной функциональности.
 
-## Planned Game Modes
+## Планируемые игровые режимы
 
 ### Adventure Mode
 
-Adventure Mode is planned as a gameplay-focused extension of the
-project. Instead of only generating and analyzing a dungeon, the player
-will be able to explore it as a game world.
+Adventure Mode планируется как игровое расширение проекта. В отличие от режима исследования графов, здесь игрок сможет непосредственно исследовать подземелье как игровой мир.
 
-Potential features include:
+Предполагаемые возможности:
 
--   A player character and step-by-step dungeon exploration
--   Different room types, such as ordinary rooms, monster rooms,
-    treasure rooms, and healing rooms
--   Locked rooms and keys
--   Multiple dungeon floors
--   Random events during exploration
--   Increasing difficulty as the player progresses
--   Boss encounters at progression milestones, with a boss planned every
-    five levels
+- Персонаж игрока и пошаговое исследование подземелья
+- Различные типы комнат: обычные комнаты, комнаты с монстрами, сокровищницы и комнаты для восстановления здоровья
+- Запертые комнаты и ключи
+- Несколько этажей подземелья
+- Случайные события во время исследования
+- Постепенное повышение сложности по мере продвижения игрока
+- Сражения с боссами на ключевых этапах прохождения — предполагается появление босса каждые пять уровней
 
-These mechanics are planned and may change during development.
+Эти механики находятся на стадии планирования и могут измениться в процессе разработки.
 
 ### Dungeon Editor
 
-Dungeon Editor is a possible separate mode focused on manual dungeon
-construction.
+Dungeon Editor рассматривается как возможный отдельный режим, предназначенный для ручного создания подземелий.
 
-The intended idea is to let users create and edit dungeon layouts
-themselves rather than relying exclusively on procedural generation. The
-exact editor tools and workflow have not yet been defined.
+Основная идея заключается в том, чтобы предоставить пользователю возможность самостоятельно создавать и редактировать планировки подземелий, не полагаясь исключительно на процедурную генерацию.
 
-------------------------------------------------------------------------
+Конкретный набор инструментов и принцип работы редактора пока не определены.
 
-## Current Project Status
+---
 
-The project currently provides a working procedural dungeon generator
-and a visual graph pathfinding environment.
+## Текущий статус проекта
 
-The completed Explorer Mode demonstrates:
+На данный момент проект представляет собой работоспособную систему процедурной генерации подземелий и визуализации алгоритмов поиска маршрутов на графах.
 
--   How a dungeon layout can be represented as a graph
--   How connected graph structures can be generated procedurally
--   How edge weights affect shortest-path search
--   How BFS, DFS, and Dijkstra explore the same graph differently
--   How graph algorithms can be visualized in an interactive application
+Завершённый Explorer Mode демонстрирует:
 
-The next major development direction is Adventure Mode, which will build
-on the existing dungeon generation foundation and introduce gameplay
-systems.
+- Как планировку подземелья можно представить в виде графа
+- Как процедурно создавать связные графовые структуры
+- Как веса рёбер влияют на поиск кратчайшего пути
+- Чем отличаются принципы работы BFS, DFS и Dijkstra при исследовании одного и того же графа
+- Как визуализировать работу графовых алгоритмов в интерактивном приложении
+
+Следующим крупным этапом развития станет Adventure Mode, который будет использовать существующую систему генерации подземелий в качестве основы для игровых механик.
