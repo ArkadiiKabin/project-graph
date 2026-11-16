@@ -51,7 +51,8 @@ jobs:
         run: |
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_TESTING=ON
+            -DBUILD_TESTING=ON \
+            -DSFML_STATIC_LIBRARIES=ON
 
       - name: Build project
         run: cmake --build build --parallel 2
