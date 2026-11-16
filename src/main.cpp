@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 
-#include "game/Game.hpp"
-#include "game/Graph.hpp"
+#include "explorerMode/Game.hpp"
+#include "explorerMode/Graph.hpp"
 #include "ui/Menu.hpp"
 
 int main() {
