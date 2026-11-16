@@ -1,6 +1,12 @@
 # Dungeon Explorer
 
 <p align="center">
+  <a href="https://github.com/ArkadiiKabin/project-graph/actions/workflows/cmake-multi-platform.yml">
+    <img src="https://github.com/ArkadiiKabin/project-graph/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main" alt="Dungeon Explorer CI">
+  </a>
+</p>
+
+<p align="center">
   <img src="screenshots/dungeonBase.png" alt="Dungeon Explorer — сгенерированное подземелье" width="800">
 </p>
 
