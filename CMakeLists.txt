@@ -12,6 +12,8 @@ add_executable(DungeonExplorer
     src/ui/Menu.cpp
     src/game/Game.cpp
     src/game/Graph.cpp
+    src/game/rendering/DungeonRenderer.cpp
+    src/game/ui/SettingsWindow.cpp
 )
 
 target_link_libraries(DungeonExplorer
